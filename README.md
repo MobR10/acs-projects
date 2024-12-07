@@ -1,2 +1,2 @@
 # acs-projects
-Easy pc &lt;-> laptop work  transfer
+Easy pc <-> laptop work  transfer
