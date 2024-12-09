@@ -36,9 +36,9 @@ int main()
             
     //     }
 
-    char a,b,s[10],p[10];
-    int  m,n,o;
-    float f;
+    // char a,b,s[10],p[10];
+    // int  m,n,o;
+    // float f;
 
     // scanf("%s",s);
     // scanf("%s",p);
@@ -62,16 +62,37 @@ int main()
     // "\n%s"
     // ,a,b,s);
 
-    scanf("%d",&m);
-    scanf("%c",&a);
-    scanf("%f",&f);
+    // scanf("%d",&m);
+    // scanf("%c",&a);
+    // scanf("%f",&f);
 
-    printf(
-        "===="
-        "\n|%d|"
-        "\n|%c|"
-        "\n|%f|"
-        "\n====",m,a,f
-    );
+    // printf(
+    //     "===="
+    //     "\n|%d|"
+    //     "\n|%c|"
+    //     "\n|%f|"
+    //     "\n====",m,a,f
+    // );
+
+    char a,b,c,s[10],p[10];
+
+    a=getchar();
+    b=getchar();
+    gets(s);
+    c=getchar();
+
+    printf
+    (
+    "|%c|"
+    "\n|%c|"
+    "\n|%s|"
+    "\n|%c|"
+    
+    ,a,b,s,c);
+    
+
+    
+    
+
 
 }
