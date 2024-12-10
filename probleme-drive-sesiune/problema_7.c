@@ -47,11 +47,11 @@ void init()
 }
 int main()
 {
-    //Comp t[20];
+    Comp t[20];
     FILE *fb;
-    //FILE *rezultat;
+    FILE *rezultat;
     int v[20],w[20],rez[40];
-    size_t n,m,p;
+    size_t n,m,p,tCount=0;
     
     init();
     printf("Introduceti numarul de elemente al primului vector: ");
@@ -94,9 +94,23 @@ int main()
                     }
                 else
                 {
-                    char aux[40]="";
-                    for(size_t j=0;j<p;j++);
-                        // NU POT SA CONTINUI, ENUNT CIUDAT
+                    char aux[100]="",sir[100];
+                    int poz=0;
+                    
+                    for(size_t j=0;j<p;j++)
+                        {
+                            fgets(sir,100,f);
+                        }
+                    for(int i=0;i<p;i++)
+                        {
+                            aux[poz]=sir[rez[i]];
+                            poz++;
+                        }
+                    aux[poz]='\0';
+                    strcpy(t[tCount].s,aux);
+                    t[tCount].linie=p;
+                    tCount++;
+                        
                 }
             }
             
