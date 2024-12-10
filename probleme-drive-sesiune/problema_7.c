@@ -95,10 +95,8 @@ int main()
                 else
                 {
                     char aux[40]="";
-                    for(size_t j=0;j<p;j++)
-                        {
-                            
-                        }
+                    for(size_t j=0;j<p;j++);
+                        // NU POT SA CONTINUI, ENUNT CIUDAT
                 }
             }
             
