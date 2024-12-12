@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define FISIER_INTRARE "date_intrare.dat"
+#define FISIER_IESIRE "rezultat.dat"
+
 typedef struct
 {
 
@@ -34,19 +37,20 @@ int functie(int v[], int n, int w[], int m, int rez[], int *p)
         return 0;
 }
 
-// CREAM UN FISIER BINAR CA SA AVEM DE UNDE CITI NUMERELE
+// CREAM UN FISIER CA SA AVEM DE UNDE CITI CHESTII (FOR VERIFICATION PURPOSES)
 void init()
 {
     FILE *f;
-    if ((f = fopen("date_intrare.dat", "wb")) == NULL)
+    if ((f = fopen(FISIER_INTRARE, "wb")) == NULL)
     {
-        puts("ERROR init(): nu s-a putut deschide fisierul!");
+        puts("ERROR init(): nu s-a putut deschide fisierul date_intrare.dat!");
         exit(1);
     }
     int vectorAux[100] = {1, -3, -1, 4, 0, 6, 7, 0, -13, -1, 0, 5, 0, 0, 0, 0, -1, -2, 1, 2, 10, 120, 31, -13, -23, 0, -2, 0, 1, -54, 0, 0};
     fwrite(vectorAux, sizeof(int), 100, f);
     fclose(f);
 }
+
 int main()
 {
     Structura vectorStructura[20];
@@ -60,9 +64,10 @@ int main()
     printf("Introduceti numarul de elemente al celui de-al doilea vector: ");
     scanf("%d", &vector2Count);
 
-    if ((fisierIntrare = fopen("fisier.dat", "rb")) == NULL)
+    if ((fisierIntrare = fopen(FISIER_INTRARE, "rb")) == NULL)
     {
-        puts(("Nu s-a putut deschide fisierul binar"));
+        puts("Nu s-a putut deschide fisierul binar"
+        FISIER_INTRARE);
         exit(1);
     }
     fread(vector1, sizeof(int), (size_t)vector1Count, fisierIntrare);
@@ -127,7 +132,7 @@ int main()
         }
         if (ok)
         {
-            if ((fisierRezultat = fopen("rezultat.dat", "wb")) == NULL)
+            if ((fisierRezultat = fopen(FISIER_IESIRE, "wb")) == NULL)
             {
                 puts("Nu s-a putut deschide fisierul rezultat");
                 exit(1);
@@ -135,7 +140,7 @@ int main()
             fwrite(vectorStructura, sizeof(Structura), vectorStructuraCount, fisierRezultat);
             fclose(fisierRezultat);
 
-            fisierRezultat = fopen("rezultat.dat", "rb");
+            fisierRezultat = fopen(FISIER_IESIRE, "rb");
             for (int i = 0; i < vectorStructuraCount; i++)
             {
                 Structura c;
