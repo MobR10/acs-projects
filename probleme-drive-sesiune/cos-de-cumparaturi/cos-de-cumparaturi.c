@@ -1,6 +1,7 @@
 /*
     Se cere sa se scrie un program C care sa simuleze partial functionarea
     un cos de cumparaturi...
+    https://drive.google.com/drive/folders/1mgqIIkUzDtEcTsVToa0VqFxMn57ElctD
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,13 +96,30 @@ void citire(Produs produse[],int *n)
     init(produse,*n);
 }
 
+void sortProdusCantitate(Produs *produs)
+{
+    Informatii *lista=produs->varianta;
+    for(int i=0;i<produs->cantitate-1;i++)
+        {
+            for(int j=0;j<produs->cantitate;j++)
+                {
+                    if(lista[i].stoc > lista[j].stoc)
+                    {
+                        Informatii aux=lista[i];
+                        lista[i]=lista[j];
+                        lista[j]=aux;   
+                    }
+                }
+        }
+}
+
 int main()
 {
     Produs produse[5];
     int nr_produse;
 
     citire(produse,&nr_produse);
-
+    sortProdusCantitate(&produse[0]);
     FILE *f;
     if((f=fopen(FISIER_PRODUSE,"rb"))==NULL)
         {
@@ -121,6 +139,7 @@ int main()
             }
         printf("\n");
     }
+    fclose(f);
 
     return 0;
 }
