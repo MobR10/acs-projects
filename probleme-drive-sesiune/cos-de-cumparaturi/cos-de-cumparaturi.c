@@ -101,7 +101,7 @@ void sortProdusCantitate(Produs *produs)
     Informatii *lista=produs->varianta;
     for(int i=0;i<produs->cantitate-1;i++)
         {
-            for(int j=0;j<produs->cantitate;j++)
+            for(int j=i+1;j<produs->cantitate;j++)
                 {
                     if(lista[i].stoc > lista[j].stoc)
                     {
