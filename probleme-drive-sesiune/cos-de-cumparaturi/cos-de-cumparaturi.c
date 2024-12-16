@@ -1,13 +1,11 @@
 /*
     Se cere sa se scrie un program C care sa simuleze partial functionarea
-    un cos de cumparaturi...
+    unui cos de cumparaturi...
     https://drive.google.com/drive/folders/1mgqIIkUzDtEcTsVToa0VqFxMn57ElctD
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <math.h>
 
 #define FISIER_LISTA "lista-cumparaturi.txt"
 #define FISIER_PRODUSE "produse.dat"
@@ -15,21 +13,21 @@
 
 typedef struct
 {
-    char producator[50];
+    char producator[100];
     int stoc;
     float pret;
 } Produs;
 
 typedef struct
 {
-    char numeProdus[50];
+    char numeProdus[100];
     int numarProduse;
     Produs produs[20];
 } TipProdus;
 
 // SUPLIMENTAR !!!! NU E IN CERINTA
 //==================================================
-// SIMULARE OBIECTE DIN POO
+// SIMULARE OBIECTE CA IN POO
 void constructTipProdus(TipProdus *tipProdus, char numeProdus[], int numarProduse, Produs produs[])
 {
     strcpy(tipProdus->numeProdus, numeProdus);
@@ -42,7 +40,7 @@ void constructTipProdus(TipProdus *tipProdus, char numeProdus[], int numarProdus
     }
 }
 
-// CREAM SI NOI NISTE PRODUSE IN MAGAZIN CA SA AVEM CE SA VERIFICAM
+// CREAM SI NOI NISTE PRODUSE IN MAGAZIN CA SA AVEM DE UNDE SA CITIM PE URMA
 void init(TipProdus tipProdus[], int numarTipProduse)
 {
     FILE *f;
@@ -128,25 +126,25 @@ void sortProduseDupaCantitate(TipProdus *tipProdus)
 
 // PUNCTUL b)
 //++++++++++++++++++++++++++++++++++++++++++++
-Produs* cauta_produs(char denumire[],int cantitateDorita,TipProdus tipProdus[],int numarTipProduse)
+Produs *cauta_produs(char denumire[], int cantitateDorita, TipProdus tipProdus[], int numarTipProduse)
 {
-    Produs *produs=NULL;
-    for(int i=0;i<numarTipProduse;i++)
+    Produs *produs = NULL;
+    for (int i = 0; i < numarTipProduse; i++)
+    {
+        if (stricmp(denumire, tipProdus[i].numeProdus) == 0)
         {
-            if(stricmp(denumire,tipProdus[i].numeProdus)==0)
+            sortProduseDupaCantitate(&tipProdus[i]);
+            float pretMinim = 99999;
+            for (int j = tipProdus[i].numarProduse - 1; j >= 0; j--)
+            {
+                if (cantitateDorita <= tipProdus[i].produs[j].stoc && tipProdus[i].produs[j].pret < pretMinim)
                 {
-                    sortProduseDupaCantitate(&tipProdus[i]);
-                    float pretMinim=99999;
-                    for(int j=tipProdus[i].numarProduse-1;j>=0;j--)
-                    {
-                        if(cantitateDorita<=tipProdus[i].produs[j].stoc&&tipProdus[i].produs[j].pret<pretMinim)
-                            {
-                                pretMinim=tipProdus[i].produs[j].pret;
-                                produs=&tipProdus[i].produs[j];
-                            }
-                    }
+                    pretMinim = tipProdus[i].produs[j].pret;
+                    produs = &tipProdus[i].produs[j];
                 }
+            }
         }
+    }
     return produs;
 }
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -166,7 +164,7 @@ int main()
 
     // UNCOMMENT PENTRU A SCHIMBA LISTA DE PRODUSE DIN MAGAZIN (CITESTE FIECARE PRODUS DE LA TASTATURA)
     // citire(&numarTipProduse);
-
+    //==================================================
     // CITIRE PRODUSE DIN PRODUSE.DAT SI AMPLASAREA LOR IN VECTORUL CU PRODUSE
     FILE *f;
     if ((f = fopen(FISIER_PRODUSE, "rb")) == NULL)
@@ -175,130 +173,140 @@ int main()
         exit(1);
     }
     fseek(f, 0, SEEK_END);
-    numarTipProduse = ftell(f) / sizeof(TipProdus);
+    numarTipProduse = (int)ftell(f) / (int)sizeof(TipProdus);
     fseek(f, 0, SEEK_SET);
-    fread(tipProdus, sizeof(TipProdus), numarTipProduse, f);
+    fread(tipProdus, sizeof(TipProdus), (size_t)numarTipProduse, f);
     fclose(f);
-    //==================================================
 
+    // AFISARE LISTA PRODUSE
     // FOR TESTING PURPOSES ONLY, DACA NU AFISEAZA CORECT DUPA O NOUA CITIRE, IT'S YOUR FAULT!
-     printf("\n==============AFISARE PRODUSE==============\n");
-     for(int i=0;i<numarTipProduse;i++)
-     {
-         printf("Produsul numarul %d:{\n",i+1);
-         printf("Nume produs: %s\nTipuri de %s: %d\n",tipProdus[i].numeProdus,tipProdus[i].numeProdus,tipProdus[i].numarProduse);
-         for(int j=0;j<tipProdus[i].numarProduse;j++)
-             {
-                 printf("Tipul %d:{\nProducator: %s\nStoc: %d\nPret: %.2f\n}",j+1,tipProdus[i].produs[j].producator,tipProdus[i].produs[j].stoc,tipProdus[i].produs[j].pret);
-             }
-         printf("\n");
-     }
+    // printf("\n==============AFISARE PRODUSE==============\n");
+    // for (int i = 0; i < numarTipProduse; i++)
+    // {
+    //     printf("Produsul numarul %d:{\n", i + 1);
+    //     printf("Nume produs: %s\nTipuri de %s: %d\n", tipProdus[i].numeProdus, tipProdus[i].numeProdus, tipProdus[i].numarProduse);
+    //     for (int j = 0; j < tipProdus[i].numarProduse; j++)
+    //     {
+    //         printf("Tipul %d:{\nProducator: %s\nStoc: %d\nPret: %.2f\n}", j + 1, tipProdus[i].produs[j].producator, tipProdus[i].produs[j].stoc, tipProdus[i].produs[j].pret);
+    //     }
+    //     printf("\n");
+    // }
 
-    // PUNCTUL C) 
-    FILE *fisierBon,*fisierLista;
-    if((fisierBon=fopen(FISIER_BON,"wb"))==NULL)
-        {
-            puts("Eroare deschidere scriere fisier bon!");
-            exit(1);
-        }
-    if((fisierLista=fopen(FISIER_LISTA,"rt"))==NULL)
-        {
-            puts("Eroare deschidere citire fisier lista-cumparaturi!");
-            exit(1);
-        }
-    float total=0.;
-    int counter=0;
-    while(!feof(fisierLista))
+    // PUNCTUL C)
+    //++++++++++++++++++++++++++++++++++++++++++++
+    FILE *fisierBon, *fisierLista;
+    if ((fisierBon = fopen(FISIER_BON, "wb")) == NULL)
+    {
+        puts("Eroare deschidere scriere fisier bon!");
+        exit(1);
+    }
+    if ((fisierLista = fopen(FISIER_LISTA, "rt")) == NULL)
+    {
+        puts("Eroare deschidere citire fisier lista-cumparaturi!");
+        exit(1);
+    }
+    float total = 0.;
+    int numarProduseCumparate = 0; // asta e suplimentar, e doar pentru a afisa tot bonul in terminal
+    while (!feof(fisierLista))
     {
         Produs *produs;
-        char nume[50],*p,*q,sir[100];
+        char nume[100], *p, *q, sir[100];
         int cantitateDorita;
-        strcpy(nume,"");
-        fgets(sir,100,fisierLista);
-        if(!feof(fisierLista))
-        sir[strlen(sir)-1]='\0'; // pentru ca fgets pune si ENTER-ul in sir. dar la ultimul rand nu mai exista ENTER, deci as pierde ultimul caracter din ultimul rand!
-        p=strtok(sir," ");
-        q=p;
-        q=strtok(NULL," ");
-        while(q)
+        strcpy(nume, "");
+        fgets(sir, 100, fisierLista);
+        if (!feof(fisierLista))
+            sir[strlen(sir) - 1] = '\0'; // pentru ca fgets pune si ENTER-ul in sir. dar la ultimul rand nu mai exista ENTER, deci as pierde ultimul caracter din ultimul rand!
+        // asta e un algoritm care foloseste 2 pointeri cu strtok pentru a lua produsele compuse din mai multe cuvinte cu spatii intre ele
+        p = strtok(sir, " ");
+        q = p;
+        q = strtok(NULL, " ");
+        while (q)
         {
-            if(('a'<=p[0]&&p[0]<='z') ||('A'<=p[0] && p[0]<='Z'))
-                {
-                    strcat(nume,p);
-                    if(!('0'<=q[0]&&q[0]<='9'))
-                    strcat(nume," ");
-                    
-                }
-            if('0'<=q[0]&&q[0]<='9')
-                cantitateDorita=atoi(q);
-            p=q;
-            q=strtok(NULL," ");
+            if (('a' <= p[0] && p[0] <= 'z') || ('A' <= p[0] && p[0] <= 'Z'))
+            {
+                strcat(nume, p);
+                if (!('0' <= q[0] && q[0] <= '9'))
+                    strcat(nume, " ");
+            }
+            if ('0' <= q[0] && q[0] <= '9')
+                cantitateDorita = atoi(q);
+            p = q;
+            q = strtok(NULL, " ");
         }
-        produs=cauta_produs(nume,cantitateDorita,tipProdus,numarTipProduse);
-        if(produs)
+        produs = cauta_produs(nume, cantitateDorita, tipProdus, numarTipProduse);
+        if (produs)
         {
-            int parteIntreaga=(int)floor(cantitateDorita*produs->pret);
-            int parteFractionara=(int)(ceil(cantitateDorita*produs->pret)-floor(cantitateDorita*produs->pret));
-            counter++;   
-            total+=(float)(cantitateDorita*(produs->pret));
-            fwrite(nume,sizeof(char),strlen(nume),fisierBon);
-            fwrite(" ",sizeof(char),1,fisierBon);
-            fwrite(produs->producator,sizeof(char),strlen(produs->producator),fisierBon);
-            fwrite(" ",sizeof(char),1,fisierBon);
-            fwrite(&cantitateDorita,sizeof(int),1,fisierBon);
-            fwrite(" ",sizeof(char),1,fisierBon);
-            fwrite(&parteIntreaga,sizeof(int),1,fisierBon);
-            fwrite(",",sizeof(char),1,fisierBon);
-            fwrite(&parteFractionara,sizeof(int),1,fisierBon);
-            fwrite("\n",sizeof(char),1,fisierBon);
-
+            total += (float)cantitateDorita * produs->pret;
+            numarProduseCumparate++; // Din nou, suplimentar
+            fwrite(nume, sizeof(char), 100, fisierBon);
+            fwrite(produs->producator, sizeof(char), 100, fisierBon);
+            fwrite(&cantitateDorita, sizeof(int), 1, fisierBon);
+            float cost = (float)cantitateDorita * produs->pret;
+            fwrite(&cost, sizeof(float), 1, fisierBon);
         }
         else
         {
-            printf("Magazinul nu are destul %s sau nu are deloc. Doriti sa mai continuati cumparaturile sau nu? (Y/N)",nume);
+            printf("Magazinul nu are destul stoc pentru %s sau nu are deloc produsul respectiv\n\
+            . Doriti sa mai continuati cumparaturile sau nu? (Y/N)",
+                   nume);
             char c;
-            c=getchar();
+            c = (char)getchar();
             getchar();
-            switch(c){
-                case 'N': 
+            switch (c)
+            {
+            case 'N':
                 puts("La revedere!");
-                while(!feof(fisierLista))
+                while (!feof(fisierLista))
                 {
                     fgetc(fisierLista);
                 }
                 getchar();
                 break;
-                case 'n':
+            case 'n':
                 puts("La revedere!");
-                while(!feof(fisierLista))
+                while (!feof(fisierLista))
                 {
                     fgetc(fisierLista);
                 }
                 getchar();
                 break;
-                case 'Y': break;
-                case 'y': break;
-                default: puts("Introduceti doar \"Y\" sau \"N\"!"); c=getchar();
+            case 'Y':
+                break;
+            case 'y':
+                break;
+            default:
+                puts("Introduceti doar \"Y\" sau \"N\"!");
+                getchar();
             }
         }
-        
     }
-    fwrite(&total,sizeof(float),1,fisierBon);
+
+    fwrite(&total, sizeof(float), 1, fisierBon);
     fclose(fisierBon);
     fclose(fisierLista);
-    
-    fisierBon=fopen(FISIER_BON,"rb");
-    for(int i=0;i<counter;i++)
-    {
-        char s[200];
-        fgets(s,200,fisierBon);
-        s[strlen(s)-1]='\0';
-        puts(s);
-    }
-        float tot;
-        fread(&tot,sizeof(float),1,fisierBon);
-        printf("%.2f",tot);
-    
-    fclose(fisierBon);
+
+    // SUPLIMENTAR, NU E NEVOIE SA AFISAM TOATE PRODUSELE DE PE BONUL FISCAL, CI DOAR TOTALUL
+    // UNCOMMENT, PENTRU A AFISA SI PRODUSELE INAINTE DE TOTAL
+    //=================================================
+    // fisierBon=fopen(FISIER_BON,"rb");
+    // printf("BON FISCAL:\n");
+    // for(int i=0;i<numarProduseCumparate;i++)
+    // {
+    //     char nume[100],producator[100];
+    //     int cantitateDorita;
+    //     float cost;
+    //     fread(nume,sizeof(char),100,fisierBon);
+    //     fread(producator,sizeof(char),100,fisierBon);
+    //     fread(&cantitateDorita,sizeof(int),1,fisierBon);
+    //     fread(&cost,sizeof(float),1,fisierBon);
+
+    //     printf("%s %s %d %.2f\n",nume,producator,cantitateDorita,cost);
+    // }
+    // fclose(fisierBon);
+    //=================================================
+
+    printf("Total: %.2f", total);
+    //++++++++++++++++++++++++++++++++++++++++++++
+
     return 0;
 }
