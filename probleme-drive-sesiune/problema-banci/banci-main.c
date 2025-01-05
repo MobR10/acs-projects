@@ -65,13 +65,13 @@ void sortCrescDupaNume(Client v[], int length)
             j++;
         }
     }
-    while(i<length1)
+    while (i < length1)
     {
         rez1[*rezLength1] = banca1[i];
         (*rezLength1)++;
         i++;
     }
-    while(j<length2)
+    while (j < length2)
     {
         rez3[*rezLength3] = banca2[j];
         (*rezLength3)++;
@@ -95,8 +95,8 @@ void afiseazaClienti(Client v[], int length)
 #endif
 /*PUNCTUL c)*/ int main()
 {
-    Client banca1[10], banca2[10],rez1[10],rez2[10],rez3[10];
-    int length1 = 0, length2 = 0,rezLength1=0,rezLength2=0,rezLength3=0;
+    Client banca1[10], banca2[10], rez1[10], rez2[10], rez3[10];
+    int length1 = 0, length2 = 0, rezLength1 = 0, rezLength2 = 0, rezLength3 = 0;
     //====================
     // CITIRE FISIERE banca1.txt SI banca2.txt
     // IN ENUNT NU APARE SI FELUL IN CARE SUNT STRUCTURATE FISIERELE TEXT, ASTFEL CA VOI CONSIDERA CA INFORMATIILE DESPRE CLIENTI SUNT SCRISE DIRECT CATE UNA PE FIECARE LINIE!
@@ -114,7 +114,7 @@ void afiseazaClienti(Client v[], int length)
     }
 
     {
-        char nume[50],c;
+        char nume[50], c;
         float debit, credit;
         int codClient;
         while (!feof(f1))
@@ -124,7 +124,7 @@ void afiseazaClienti(Client v[], int length)
             fscanf(f1, "%f", &debit);
             fscanf(f1, "%f", &credit);
             fscanf(f1, "%d", &codClient);
-            fscanf(f1,"%c", &c);
+            fscanf(f1, "%c", &c);
             strcpy(banca1[length1].nume, nume);
             banca1[length1].debit = debit;
             banca1[length1].credit = credit;
@@ -139,7 +139,7 @@ void afiseazaClienti(Client v[], int length)
             fscanf(f2, "%f", &debit);
             fscanf(f2, "%f", &credit);
             fscanf(f2, "%d", &codClient);
-            fscanf(f2,"%c", &c);
+            fscanf(f2, "%c", &c);
             strcpy(banca2[length2].nume, nume);
             banca2[length2].debit = debit;
             banca2[length2].credit = credit;
@@ -157,10 +157,9 @@ void afiseazaClienti(Client v[], int length)
     afiseazaClienti(banca2, length2);
 #endif
 
-int cmax = codMaxim(banca2, length2);
+    int cmax = codMaxim(banca2, length2);
 
-
-functie(banca1,length1,banca2,length2,rez1,&rezLength1,rez2,&rezLength2,rez3,&rezLength3);
+    functie(banca1, length1, banca2, length2, rez1, &rezLength1, rez2, &rezLength2, rez3, &rezLength3);
 
 #if DEBUG == 2
     puts("REZ 1:");
@@ -171,42 +170,42 @@ functie(banca1,length1,banca2,length2,rez1,&rezLength1,rez2,&rezLength2,rez3,&re
     afiseazaClienti(rez3, rezLength3);
 #endif
 
-// CREARE FISIERUL BINAR
+    // CREARE FISIERUL BINAR
     FILE *fisierBinar;
-    if((fisierBinar=fopen("fisierBinar.dat","wb"))==NULL)
+    if ((fisierBinar = fopen("fisierBinar.dat", "wb")) == NULL)
     {
         puts("Eroare la crearea fisierului binar.");
         exit(1);
     }
-    if(rezLength1>0)
-    fwrite(rez1,sizeof(Client),rezLength1,fisierBinar);
-    if(rezLength2>0)
-    fwrite(rez2,sizeof(Client),rezLength2,fisierBinar);
-    for(int i=0;i<length1;i++)
-        banca1[i].codClient=cmax+i+1;
-    fwrite(banca1,sizeof(Client),length1,fisierBinar);
+    if (rezLength1 > 0)
+        fwrite(rez1, sizeof(Client), rezLength1, fisierBinar);
+    if (rezLength2 > 0)
+        fwrite(rez2, sizeof(Client), rezLength2, fisierBinar);
+    for (int i = 0; i < length1; i++)
+        banca1[i].codClient = cmax + i + 1;
+    fwrite(banca1, sizeof(Client), length1, fisierBinar);
     fclose(fisierBinar);
 
-    printf("Numarul total de clienti din fisierul binar este: %d", rezLength1+rezLength2+length1);
+    printf("Numarul total de clienti din fisierul binar este: %d", rezLength1 + rezLength2 + length1);
 
-    #if DEBUG == 3
-    fisierBinar=fopen("fisierBinar.dat","rb");
+#if DEBUG == 3
+    fisierBinar = fopen("fisierBinar.dat", "rb");
 
-    if(rezLength1>0)
-    fread(rez1,sizeof(Client),rezLength1,fisierBinar);
+    if (rezLength1 > 0)
+        fread(rez1, sizeof(Client), rezLength1, fisierBinar);
 
-    if(rezLength2>0)
-    fread(rez2,sizeof(Client),rezLength2,fisierBinar);
+    if (rezLength2 > 0)
+        fread(rez2, sizeof(Client), rezLength2, fisierBinar);
 
-    for(int i=0;i<length1;i++)
-        banca1[i].codClient=cmax+i+1;
-    fread(banca1,sizeof(Client),length1,fisierBinar);
+    for (int i = 0; i < length1; i++)
+        banca1[i].codClient = cmax + i + 1;
+    fread(banca1, sizeof(Client), length1, fisierBinar);
 
     fclose(fisierBinar);
     puts("");
-    afiseazaClienti(rez1,rezLength1);
-    afiseazaClienti(rez2,rezLength2);
-    afiseazaClienti(banca1,length1);
-    #endif
+    afiseazaClienti(rez1, rezLength1);
+    afiseazaClienti(rez2, rezLength2);
+    afiseazaClienti(banca1, length1);
+#endif
     return 0;
 }
