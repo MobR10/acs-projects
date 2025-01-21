@@ -1,0 +1,5 @@
+primul fisier
+asta e linia 2 din primul fisier
+asta e linia 3 din primul fisier
+asta e linia 4  din primul fisier
+asta e linia 5 din primul fisier
