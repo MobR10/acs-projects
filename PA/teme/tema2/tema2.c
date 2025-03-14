@@ -1,19 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define EX1 0 // schimba in din 0 in 1 pentru a rula exercitiul respectiv
-#define EX2 0
-#define EX3 0
-#define EX4 1
-#define EX5 0
-
 struct node
 {
-
     int key, data;
-
     struct node *prev, *next;
 };
+
 typedef struct node Node;
 
 int isEmpty(Node *head)
@@ -105,7 +98,7 @@ int palindrom(Node *head)
     int n = 0, *v = (int *)malloc(1);
     while (head)
     {
-        realloc(v, sizeof(int) * (n + 1));
+        v=realloc(v, sizeof(int) * (long long unsigned int)(n + 1));
         v[n] = head->data;
         n++;
         head = head->next;
@@ -204,6 +197,12 @@ int deleteMiddle(Node *head)
     {
         n++;
         temp = temp->next;
+    }
+
+    if(n==2)
+    {
+        puts("Bro, mai sunt doar 2 noduri, ce vrei sa mai stergi? uite ca nu te las!");
+        return 0;
     }
 
     while (c != n / 2)
@@ -363,11 +362,11 @@ int main()
                     puts("Mai intai, hai sa cream o lista simplu inlantuita");
                     head1 = createSimpleLinkedList();
                 }
-                printf("Lista initiala: (numar cheie unica): ");
-                display(head1, key);
+                printf("Lista initiala: (numar data): ");
+                display(head1, data);
                 deleteDuplicates(head1);
                 printf("Lista dupa stergere duplicate: ");
-                display(head1, key);
+                display(head1, data);
                 puts("");
                 break;
             case 2:
@@ -389,11 +388,11 @@ int main()
                     puts("Mai intai hai sa cream o lista dublu inlantuita");
                     head3 = createDoubleLinkedList();
                 }
-                printf("Lista initiala (dupa chei): ");
+                printf("Lista initiala (dupa data): ");
                 display(head3, data);
                 deleteMiddle(head3);
-                printf("Lista dupa stergerea mijlocului (dupa chei): ");
-                display(head3, key);
+                printf("Lista dupa stergerea mijlocului (dupa data): ");
+                display(head3, data);
                 puts("");
                 break;
             case 4:
