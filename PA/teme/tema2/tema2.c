@@ -199,11 +199,11 @@ int deleteMiddle(Node *head)
         temp = temp->next;
     }
 
-    if(n==2)
-    {
-        puts("Bro, mai sunt doar 2 noduri, ce vrei sa mai stergi? uite ca nu te las!");
-        return 0;
-    }
+    // if(n==2)
+    // {
+    //     puts("Bro, mai sunt doar 2 noduri, ce vrei sa mai stergi? uite ca nu te las!");
+    //     return 0;
+    // }
 
     while (c != n / 2)
     {
@@ -330,6 +330,24 @@ int combineLists(Node *head1, Node *head2)
 // }
 ////////////////////////////////////////////////////////////////////
 
+int removeList(Node **head)
+{
+    if(isEmpty(*head))
+    {
+        puts("Error in removeList: head is null");
+        return 0;
+    }
+
+    Node *prev;
+    while(*head)
+    {
+        prev=*head;
+        *head=(*head)->next;
+        free(prev);
+    }
+    return 1;
+}
+
 int main()
 {
     Node *head1 = NULL, *head2 = NULL, *head3 = NULL;
@@ -355,6 +373,10 @@ int main()
             scanf("%d", &n);
             switch (n)
             {
+            case -1:
+                removeList(&head1);
+                display(head1,key);
+            break;
             case 1:
                 puts("Rulare exercitiu 1:");
                 if (!head1)
@@ -432,6 +454,8 @@ int main()
                 combineLists(head1, head2);
                 printf("Lista combinata: ");
                 display(head1, data);
+                removeList(&head1);
+                removeList(&head2);
                 break;
             case 0:
                 break;
