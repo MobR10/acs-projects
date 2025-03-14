@@ -9,17 +9,17 @@ struct node
 
 typedef struct node Node;
 
-int isEmpty(Node *head)
+int isEmpty(Node *head) // functie basic de a verifica daca un nod sau un pointer in general e NULL
 {
     if (head == NULL)
         return 1;
     return 0;
 }
 
-Node *createSimpleLinkedList()
+Node *createSimpleLinkedList() // funcite de creare a unei liste simplu inlantuite, intrebam user-ul cate noduri si ce valori sa puna
 {
     int n, data;
-    printf("CREARE LISTA SIMPLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10)");
+    printf("CREARE LISTA SIMPLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10): ");
     do
     {
         scanf("%d", &n);
@@ -33,6 +33,11 @@ Node *createSimpleLinkedList()
         printf("Nodul %d, Introdu campul \"data\": ", i);
         scanf("%d", &data);
         current = (Node *)malloc(sizeof(Node));
+        if(current==NULL)
+        {
+            puts("Error in createSimpleLinkedList: cant allocate memory for node.");
+            exit(1);
+        }
         current->data = data;
         current->key = i;
         current->next = NULL;
@@ -96,9 +101,19 @@ int palindrom(Node *head)
         return 0;
     }
     int n = 0, *v = (int *)malloc(1);
+    if (v == NULL)
+    {
+        puts("Error in palindrom: cant allocate memory for array");
+        exit(1);
+    }
     while (head)
     {
         v = realloc(v, sizeof(int) * (long long unsigned int)(n + 1));
+        if (v == NULL) //verificam daca s-a alocat memorie
+        {
+            puts("Error in palindrom: cant reallocate memory for array");
+            exit(1);
+        }
         v[n] = head->data;
         n++;
         head = head->next;
@@ -111,6 +126,8 @@ int palindrom(Node *head)
         p *= 10;
     }
 
+    free(v);
+
     if (n1 == n2)
     {
         puts("Este palindrom");
@@ -122,40 +139,16 @@ int palindrom(Node *head)
 }
 ////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////
-#define display(head, option)                                 \
-    do                                                        \
-    {                                                         \
-        if (isEmpty(head))                                    \
-        {                                                     \
-            printf("ERROR in macro display: head is null\n"); \
-        }                                                     \
-        else                                                  \
-        {                                                     \
-            printf("v[ ");                                    \
-            Node *temp = (head); /* Create a copy of head */  \
-            while (temp)                                      \
-            {                                                 \
-                printf("%d", temp->option);                   \
-                temp = temp->next;                            \
-                if (temp)                                     \
-                    printf(", ");                             \
-            }                                                 \
-            printf(" ]\n");                                   \
-        }                                                     \
-    } while (0)
-////////////////////////////////////////////////////////////////////
-
 // EX 3 (N=numar elemente)
 ////////////////////////////////////////////////////////////////////
 /*
     daca N impar atunci elimin elementul de pe pozitia N/2+1
     daca N par atunci elimin elementele de pe pozitiile N/2 si N/2+1
 */
-Node *createDoubleLinkedList()
+Node *createDoubleLinkedList() // functie de creare a unei liste dublu inlantuite, intrebam user-ul cate noduri sa creeze si ce valori sa puna in ele
 {
     int n, data;
-    printf("CREARE LISTA DUBLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10)");
+    printf("CREARE LISTA DUBLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10): ");
     do
     {
         scanf("%d", &n);
@@ -169,6 +162,11 @@ Node *createDoubleLinkedList()
         printf("Nodul %d, Introdu campul \"data\": ", i);
         scanf("%d", &data);
         current = (Node *)malloc(sizeof(Node));
+        if(current==NULL)
+        {
+            puts("Error in createDoubleLinkedList: cant allocate memory for node.");
+            exit(1);
+        }
         current->data = data;
         current->key = i;
         current->next = NULL;
@@ -330,7 +328,31 @@ int combineLists(Node *head1, Node *head2)
 // }
 ////////////////////////////////////////////////////////////////////
 
-int removeList(Node **head)
+// macrofunctie de afisare a unui nod dupa ce optiune doresc (key sau data)
+#define display(head, option)                                 \
+    do                                                        \
+    {                                                         \
+        if (isEmpty(head))                                    \
+        {                                                     \
+            printf("ERROR in macro display: head is null\n"); \
+        }                                                     \
+        else                                                  \
+        {                                                     \
+            printf("v[ ");                                    \
+            Node *temp = (head); /* facem copie dupa nod */   \
+            while (temp)                                      \
+            {                                                 \
+                printf("%d", temp->option);                   \
+                temp = temp->next;                            \
+                if (temp)                                     \
+                    printf(", ");                             \
+            }                                                 \
+            printf(" ]\n");                                   \
+        }                                                     \
+    } while (0)
+////////////////////////////////////////////////////////////////////
+
+int removeList(Node **head) // functie de a sterge o lista
 {
     if (isEmpty(*head))
     {
@@ -338,17 +360,19 @@ int removeList(Node **head)
         return 0;
     }
 
-    Node *prev;
-    while (*head)
+    Node *current = *head;
+    while (current)
     {
-        prev = *head;
-        *head = (*head)->next;
-        free(prev);
+        Node *next = current->next;
+        free(current);
+        current = next;
     }
+
+    *head = NULL;
     return 1;
 }
 
-void makeChoice(Node **head)
+void makeChoice(Node **head) // functie folosita in main ca sa alegi daca vrei sa pastrezi o lista nou creata sau sa o stergi si sa creezi alta, daca la un anume exercitiu ai nevoie
 {
     int choice = -1;
     do
@@ -358,6 +382,7 @@ void makeChoice(Node **head)
         {
         case 0:
             removeList(head);
+            break;
         case 1:
             break;
         default:
@@ -409,11 +434,11 @@ int main()
                 printf("Lista initiala: (valori): ");
                 display(head1, data);
                 deleteDuplicates(head1);
-                printf("Lista dupa stergere duplicate: ");
+                printf("Lista dupa stergere duplicate (valori): ");
                 display(head1, data);
                 if (exerciseCounter != 5)
                 {
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
                     makeChoice(&head1);
                 }
                 puts("");
@@ -435,10 +460,9 @@ int main()
                 printf("Lista initiala: (valori) ");
                 display(head1, data);
                 palindrom(head1);
-                display(head1, data);
                 if (exerciseCounter != 5)
                 {
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
                     makeChoice(&head1);
                 }
                 puts("");
@@ -463,11 +487,6 @@ int main()
                     chose3 = 1;
                     printf("Lista dupa stergerea mijlocului (valori): ");
                     display(head3, data);
-                }
-                if (exerciseCounter != 5)
-                {
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head3);
                 }
                 puts("");
                 break;
@@ -494,7 +513,7 @@ int main()
                 display(head1, data);
                 if (exerciseCounter != 5)
                 {
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
                     makeChoice(&head1);
                 }
                 puts("");
@@ -529,10 +548,8 @@ int main()
                 display(head1, data);
                 if (exerciseCounter != 5)
                 {
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    printf("Vrei sa pastrezi lista nou obtinuta si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
                     makeChoice(&head1);
-                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head2);
                 }
                 break;
             case 0:
@@ -542,15 +559,17 @@ int main()
             }
         } while (exerciseCounter != 5 && n != 0 && (n < 1 || n > 5));
     } while (n != 0 && exerciseCounter != 5);
-    
-    if(head1) removeList(&head1);
-    if(head2) removeList(&head2);
-    if(head3) removeList(&head3);
 
-    if(exerciseCounter==5)
-    puts("\nGata programelul, ai rulat toate cele 5 exercitii! Ruleaza din nou ca sa testezi alte variante de liste!");
+    if (head1)
+        removeList(&head1);
+    if (head3)
+        removeList(&head3);
 
-    if(n==0)
-    puts("Am inteles, ma voi inchide.");
+    if (exerciseCounter == 5)
+        puts("\nGata programelul, ai rulat toate cele 5 exercitii! Porneste programul din nou ca sa testezi alte variante de liste!");
+
+    if (n == 0)
+        puts("Am inteles, ma voi inchide.");
+
     getchar();
 }
