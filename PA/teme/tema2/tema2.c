@@ -98,7 +98,7 @@ int palindrom(Node *head)
     int n = 0, *v = (int *)malloc(1);
     while (head)
     {
-        v=realloc(v, sizeof(int) * (long long unsigned int)(n + 1));
+        v = realloc(v, sizeof(int) * (long long unsigned int)(n + 1));
         v[n] = head->data;
         n++;
         head = head->next;
@@ -199,11 +199,11 @@ int deleteMiddle(Node *head)
         temp = temp->next;
     }
 
-    // if(n==2)
-    // {
-    //     puts("Bro, mai sunt doar 2 noduri, ce vrei sa mai stergi? uite ca nu te las!");
-    //     return 0;
-    // }
+    if (n == 2)
+    {
+        puts("Bro, mai sunt doar 2 noduri, ce vrei sa mai stergi? uite ca nu te las!");
+        return 0;
+    }
 
     while (c != n / 2)
     {
@@ -297,7 +297,7 @@ int combineLists(Node *head1, Node *head2)
     int key = head1->key;
     head1->next = head2;
     head1 = head1->next;
-    
+
     while (head1) // aici setam noile chei (pentru ca cheile sunt unice, intr o lista nu trebuie sa se regaseasca aceeasi cheie de mai multe ori)
     {
         key++;
@@ -332,31 +332,50 @@ int combineLists(Node *head1, Node *head2)
 
 int removeList(Node **head)
 {
-    if(isEmpty(*head))
+    if (isEmpty(*head))
     {
         puts("Error in removeList: head is null");
         return 0;
     }
 
     Node *prev;
-    while(*head)
+    while (*head)
     {
-        prev=*head;
-        *head=(*head)->next;
+        prev = *head;
+        *head = (*head)->next;
         free(prev);
     }
     return 1;
 }
 
+void makeChoice(Node **head)
+{
+    int choice = -1;
+    do
+    {
+        scanf("%d", &choice);
+        switch (choice)
+        {
+        case 0:
+            removeList(head);
+        case 1:
+            break;
+        default:
+            puts("Te rog introdu 1 sau 0");
+        }
+    } while (choice != 0 && choice != 1);
+}
+
+// In main e doar un algoritm care sa faca programul interactiv pentru user... nu merge la infinit, in sensul ca nu poti rula acelasi exercitiu de mai multe ori din cauza modului de lucru cu liste, in comparatie cu simple array-uri.
 int main()
 {
     Node *head1 = NULL, *head2 = NULL, *head3 = NULL;
-    int n=-1, repeat = 1;
+    int n = -1, repeat = 1, chose1 = 0, chose2 = 0, chose3 = 0, chose4 = 0, chose5 = 0, exerciseCounter = 0;
 
     do
     {
-        if(n!=-1)
-            printf("Introdu din nou un numar: ");
+        if (n != -1)
+            printf("Introdu un alt exercitiu sau 0 ca sa iesi: ");
         do
         {
             if (repeat)
@@ -373,67 +392,121 @@ int main()
             scanf("%d", &n);
             switch (n)
             {
-            case -1:
-                removeList(&head1);
-                display(head1,key);
-            break;
             case 1:
+                if (chose1)
+                {
+                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
+                    break;
+                }
+                exerciseCounter++;
+                chose1 = 1;
                 puts("Rulare exercitiu 1:");
                 if (!head1)
                 {
                     puts("Mai intai, hai sa cream o lista simplu inlantuita");
                     head1 = createSimpleLinkedList();
                 }
-                printf("Lista initiala: (numar data): ");
+                printf("Lista initiala: (valori): ");
                 display(head1, data);
                 deleteDuplicates(head1);
                 printf("Lista dupa stergere duplicate: ");
                 display(head1, data);
+                if (exerciseCounter != 5)
+                {
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head1);
+                }
                 puts("");
                 break;
             case 2:
+                if (chose2)
+                {
+                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
+                    break;
+                }
+                exerciseCounter++;
+                chose2 = 1;
                 puts("Rulare exercitiu 2:");
                 if (!head1)
                 {
                     puts("Mai intai, hai sa cream o lista simplu inlantuita");
                     head1 = createSimpleLinkedList();
                 }
-                printf("Lista initiala: (afisare dupa campul \"data\") ");
+                printf("Lista initiala: (valori) ");
                 display(head1, data);
                 palindrom(head1);
+                display(head1, data);
+                if (exerciseCounter != 5)
+                {
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head1);
+                }
                 puts("");
                 break;
             case 3:
+                if (chose3)
+                {
+                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
+                    break;
+                }
                 puts("Rulare exercitiu  3:");
                 if (!head3)
                 {
                     puts("Mai intai hai sa cream o lista dublu inlantuita");
                     head3 = createDoubleLinkedList();
                 }
-                printf("Lista initiala (dupa data): ");
+                printf("Lista initiala (valori): ");
                 display(head3, data);
-                deleteMiddle(head3);
-                printf("Lista dupa stergerea mijlocului (dupa data): ");
-                display(head3, data);
+                if (deleteMiddle(head3))
+                {
+                    exerciseCounter++;
+                    chose3 = 1;
+                    printf("Lista dupa stergerea mijlocului (valori): ");
+                    display(head3, data);
+                }
+                if (exerciseCounter != 5)
+                {
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head3);
+                }
                 puts("");
                 break;
             case 4:
+                if (chose4)
+                {
+                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
+                    break;
+                }
+                exerciseCounter++;
+                chose4 = 1;
                 if (!head1)
                 {
                     puts("Mai intai, hai sa cream o lista simplu inlantuita");
                     head1 = createSimpleLinkedList();
                 }
                 puts("Rulare exercitiu 4:");
-                printf("Lista initiala: ");
+                printf("Lista initiala (valori): ");
                 display(head1, data);
                 puts("");
                 inverseIterative(&head1);
-                //inverseRecursive(&head1, NULL, head1, head1->next); 
-                printf("Lista dupa inversare: ");
+                // inverseRecursive(&head1, NULL, head1, head1->next);
+                printf("Lista dupa inversare (valori): ");
                 display(head1, data);
+                if (exerciseCounter != 5)
+                {
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head1);
+                }
                 puts("");
                 break;
             case 5:
+                if (chose5)
+                {
+                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
+                    break;
+                }
+                exerciseCounter++;
+                chose5 = 1;
                 if (!head1)
                 {
                     puts("Mai intai, hai sa cream prima lista simplu inlantuita");
@@ -445,23 +518,39 @@ int main()
                     head2 = createSimpleLinkedList();
                 }
                 puts("Rulare exercitiu  5:");
-                printf("Lista 1: ");
+                printf("Lista 1 (valori): ");
                 display(head1, data);
                 puts("");
-                printf("Lista 2: ");
+                printf("Lista 2 (valori): ");
                 display(head2, data);
                 puts("");
                 combineLists(head1, head2);
-                printf("Lista combinata: ");
+                printf("Lista combinata (valori): ");
                 display(head1, data);
-                removeList(&head1);
-                removeList(&head2);
+                if (exerciseCounter != 5)
+                {
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head1);
+                    printf("Vrei sa pastrezi lista si sa eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
+                    makeChoice(&head2);
+                }
                 break;
             case 0:
                 break;
             default:
                 puts("Introdu un numar natural minim 1, maxim 5 sau 0 pentru a iesi");
             }
-        } while (n != 0 && (n < 1 || n > 5));
-    } while (n != 0);
+        } while (exerciseCounter != 5 && n != 0 && (n < 1 || n > 5));
+    } while (n != 0 && exerciseCounter != 5);
+    
+    if(head1) removeList(&head1);
+    if(head2) removeList(&head2);
+    if(head3) removeList(&head3);
+
+    if(exerciseCounter==5)
+    puts("\nGata programelul, ai rulat toate cele 5 exercitii! Ruleaza din nou ca sa testezi alte variante de liste!");
+
+    if(n==0)
+    puts("Am inteles, ma voi inchide.");
+    getchar();
 }
