@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
 
 struct node
 {
@@ -33,7 +34,7 @@ Node *createSimpleLinkedList() // funcite de creare a unei liste simplu inlantui
         printf("Nodul %d, Introdu campul \"data\": ", i);
         scanf("%d", &data);
         current = (Node *)malloc(sizeof(Node));
-        if(current==NULL)
+        if (current == NULL)
         {
             puts("Error in createSimpleLinkedList: cant allocate memory for node.");
             exit(1);
@@ -72,7 +73,7 @@ int deleteDuplicates(Node *head)
         prev = head;
         while (current)
         {
-            if (current->data == head->data)
+            if (current->data == head->data) //cand gasim duplicata, schimbam nextul sa sara peste duplicata si eliberam memoria.
             {
                 prev->next = current->next;
                 temp = current;
@@ -109,7 +110,7 @@ int palindrom(Node *head)
     while (head)
     {
         v = realloc(v, sizeof(int) * (long long unsigned int)(n + 1));
-        if (v == NULL) //verificam daca s-a alocat memorie
+        if (v == NULL) // verificam daca s-a alocat memorie
         {
             puts("Error in palindrom: cant reallocate memory for array");
             exit(1);
@@ -145,7 +146,7 @@ int palindrom(Node *head)
     daca N impar atunci elimin elementul de pe pozitia N/2+1
     daca N par atunci elimin elementele de pe pozitiile N/2 si N/2+1
 */
-void createDoubleLinkedList(Node **head,Node **end) // functie de creare a unei liste dublu inlantuite, intrebam user-ul cate noduri sa creeze si ce valori sa puna in ele
+void createDoubleLinkedList(Node **head, Node **end) // functie de creare a unei liste dublu inlantuite, intrebam user-ul cate noduri sa creeze si ce valori sa puna in ele
 {
     int n, data;
     printf("CREARE LISTA DUBLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10): ");
@@ -162,7 +163,7 @@ void createDoubleLinkedList(Node **head,Node **end) // functie de creare a unei 
         printf("Nodul %d, Introdu campul \"data\": ", i);
         scanf("%d", &data);
         current = (Node *)malloc(sizeof(Node));
-        if(current==NULL)
+        if (current == NULL)
         {
             puts("Error in createDoubleLinkedList: cant allocate memory for node.");
             exit(1);
@@ -176,8 +177,8 @@ void createDoubleLinkedList(Node **head,Node **end) // functie de creare a unei 
 
         if (i == 0)
             *head = current;
-        if(i==n-1)
-            *end=current;
+        if (i == n - 1)
+            *end = current;
         prev = current;
     }
 }
@@ -190,7 +191,7 @@ int deleteMiddle(Node *head)
     }
 
     Node *temp = head;
-    int n = 0, c = 0;
+    int n = 0, c = 1;
     while (temp)
     {
         n++;
@@ -203,13 +204,13 @@ int deleteMiddle(Node *head)
         return 0;
     }
 
-    while (c != n / 2)
+    while(c < n/2)
     {
         c++;
-        head = head->next;
+        head=head->next;
     }
 
-    // acum stergem nodul de pe pozitia N/2
+    // acum stergem nodul de pe pozitia N/2 sau ne deplasam in fata o data, in functie de paritatea lui n
     if (n % 2 == 0)
     {
         head->prev->next = head->next; // mutam "next"-ul nodului posterior nodului curent catre nodul anterior nodului curent
@@ -218,6 +219,7 @@ int deleteMiddle(Node *head)
         head = head->next;
         free(temp);
     }
+    else head=head->next;
 
     // acum stergem nodul de pe pozitia N/2+1
     head->prev->next = head->next;
@@ -252,7 +254,7 @@ int inverseIterative(Node **head)
     return 1;
 }
 
-int inverseRecursive(Node **head, Node *prev, Node *current, Node *next)
+int inverseRecursive(Node **head, Node *prev, Node *current)
 {
     if (isEmpty(*head))
     {
@@ -267,11 +269,11 @@ int inverseRecursive(Node **head, Node *prev, Node *current, Node *next)
     }
     else
     {
-        next = current->next;
+        Node *next = current->next;
         current->next = prev;
         prev = current;
         current = next;
-        return inverseRecursive(head, prev, current, next);
+        return inverseRecursive(head, prev, current);
     }
 }
 ////////////////////////////////////////////////////////////////////
@@ -394,182 +396,120 @@ void makeChoice(Node **head) // functie folosita in main ca sa alegi daca vrei s
 // In main e doar un algoritm care sa faca programul interactiv pentru user... nu merge la infinit, in sensul ca nu poti rula acelasi exercitiu de mai multe ori din cauza modului de lucru cu liste, in comparatie cu simple array-uri.
 int main()
 {
-    Node *head1 = NULL, *head2 = NULL, *head3 = NULL,*end3=NULL;
-    int n = -1, repeat = 1, chose1 = 0, chose2 = 0, chose3 = 0, chose4 = 0, chose5 = 0, exerciseCounter = 0;
-
+    Node *head1 = NULL, *head2 = NULL, *head3 = NULL, *end3 = NULL;
+    int n = -1, showLists = 0, chose1 = 0, chose2 = 0, chose3 = 0, chose4 = 0, chose5 = 0;
     do
     {
-        if (n != -1)
-            printf("Introdu un alt exercitiu sau 0 ca sa iesi: ");
+        printf("Te rog sa alegi unul dintre exercitiile de mai jos sau 0, daca vrei sa iesi:\n"
+               "1. Realizati un program care sa stearga duplicatele dintr-o lista simplu inlantuita nesortata.\n"
+               "2. Realizati un algoritm care sa verifice ca o lista simplu inlantuita este palindrom.\n"
+               "3. Realizati o lista dublu inlantuita in care sa cautati elementul de la mijloc si sa il stergeti.\n"
+               "4. Inversati o lista inlantuita folosind un algoritm recursiv si unul iterativ.\n"
+               "5. Combinati doua liste inlantuite intr-una singura.\n");
+
+        if (head1)
+        {
+            printf("Lista 1(simpla): ");
+            display(head1, data);
+        }
+        if (head3)
+        {
+            printf("Lista 2(dubla): ");
+            display(head3, data);
+        }
+
         do
         {
-            if (repeat)
-            {
-                printf("Te rog sa alegi unul dintre exercitiile de mai jos sau 0, daca vrei sa iesi:\n"
-                       "1. Realizati un program care sa stearga duplicatele dintr-o lista simplu inlantuita nesortata.\n"
-                       "2. Realizati un algoritm care sa verifice ca o lista simplu inlantuita este palindrom.\n"
-                       "3. Realizati o lista dublu inlantuita in care sa cautati elementul de la mijloc si sa il stergeti.\n"
-                       "4. Inversati o lista inlantuita folosind un algoritm recursiv si unul iterativ.\n"
-                       "5. Combinati doua liste inlantuite intr-una singura.\n");
-                repeat = 0;
-            }
-
             scanf("%d", &n);
-            switch (n)
+            if (n != 0 && (n < 1 || n > 5))
+                printf("%d nu este o varianta valida.\n", n);
+        } while (n != 0 && (n < 1 || n > 5));
+
+        switch (n)
+        {
+        case 1:
+            if (!head1)
             {
-            case 1:
-                if (chose1)
-                {
-                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
-                    break;
-                }
-                exerciseCounter++;
-                chose1 = 1;
-                puts("Rulare exercitiu 1:");
-                if (!head1)
-                {
-                    puts("Mai intai, hai sa cream o lista simplu inlantuita");
-                    head1 = createSimpleLinkedList();
-                }
-                printf("Lista initiala: (valori): ");
-                display(head1, data);
-                deleteDuplicates(head1);
-                printf("Lista dupa stergere duplicate (valori): ");
-                display(head1, data);
-                if (exerciseCounter != 5)
-                {
-                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head1);
-                }
-                puts("");
-                break;
-            case 2:
-                if (chose2)
-                {
-                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
-                    break;
-                }
-                exerciseCounter++;
-                chose2 = 1;
-                puts("Rulare exercitiu 2:");
-                if (!head1)
-                {
-                    puts("Mai intai, hai sa cream o lista simplu inlantuita");
-                    head1 = createSimpleLinkedList();
-                }
-                printf("Lista initiala: (valori) ");
-                display(head1, data);
-                palindrom(head1);
-                if (exerciseCounter != 5)
-                {
-                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head1);
-                }
-                puts("");
-                break;
-            case 3:
-                if (chose3)
-                {
-                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
-                    break;
-                }
-                puts("Rulare exercitiu  3:");
-                if (!head3)
-                {
-                    puts("Mai intai hai sa cream o lista dublu inlantuita");
-                    createDoubleLinkedList(&head3,&end3);
-                }
-                printf("Lista initiala (valori): ");
-                display(head3, data);
-                if (deleteMiddle(head3))
-                {
-                    exerciseCounter++;
-                    chose3 = 1;
-                    printf("Lista dupa stergerea mijlocului (valori): ");
-                    display(head3, data);
-                }
-                puts("");
-                break;
-            case 4:
-                if (chose4)
-                {
-                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
-                    break;
-                }
-                exerciseCounter++;
-                chose4 = 1;
-                if (!head1)
-                {
-                    puts("Mai intai, hai sa cream o lista simplu inlantuita");
-                    head1 = createSimpleLinkedList();
-                }
-                puts("Rulare exercitiu 4:");
-                printf("Lista initiala (valori): ");
-                display(head1, data);
-                puts("");
-                inverseIterative(&head1);
-                // inverseRecursive(&head1, NULL, head1, head1->next);
-                printf("Lista dupa inversare (valori): ");
-                display(head1, data);
-                if (exerciseCounter != 5)
-                {
-                    printf("Vrei sa pastrezi lista si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head1);
-                }
-                puts("");
-                break;
-            case 5:
-                if (chose5)
-                {
-                    puts("Hei, din pacate poti selecta doar o data un exercitiu...");
-                    break;
-                }
-                exerciseCounter++;
-                chose5 = 1;
-                if (!head1)
-                {
-                    puts("Mai intai, hai sa cream prima lista simplu inlantuita");
-                    head1 = createSimpleLinkedList();
-                }
-                if (!head2)
-                {
-                    puts("Hai sa cream a doua lista simplu inlantuita");
-                    head2 = createSimpleLinkedList();
-                }
-                puts("Rulare exercitiu  5:");
-                printf("Lista 1 (valori): ");
-                display(head1, data);
-                puts("");
-                printf("Lista 2 (valori): ");
-                display(head2, data);
-                puts("");
-                combineLists(head1, head2);
-                printf("Lista combinata (valori): ");
-                display(head1, data);
-                if (exerciseCounter != 5)
-                {
-                    printf("Vrei sa pastrezi lista nou obtinuta si eventual sa o folosesti la alte exercitii sau sa o stergi?\nIntrodu 1(pastreaza) sau 0(sterge): ");
-                    makeChoice(&head1);
-                }
-                break;
-            case 0:
-                break;
-            default:
-                puts("Introdu un numar natural minim 1, maxim 5 sau 0 pentru a iesi");
+                puts("Lista 1 nu exista, hai sa o cream.");
+                head1 = createSimpleLinkedList();
             }
-        } while (exerciseCounter != 5 && n != 0 && (n < 1 || n > 5));
-    } while (n != 0 && exerciseCounter != 5);
+            printf("Lista initiala (valori): ");
+            display(head1, data);
+            deleteDuplicates(head1);
+            printf("Lista dupa stergerea duplicatelor (valori): ");
+            display(head1, data);
+            printf("Doresti sa pastrezi lista pentru alte exercitii sau sa o stergi?\nPastreaza (1) sau Sterge (0)\n");
+            makeChoice(&head1);
+            break;
+        case 2:
+            if (!head1)
+            {
+                puts("Lista 1 nu exista, hai sa o cream.");
+                head1 = createSimpleLinkedList();
+            }
+            printf("Lista initiala (valori): ");
+            display(head1, data);
+            palindrom(head1);
+            printf("Doresti sa pastrezi lista pentru alte exercitii sau sa o stergi?\nPastreaza (1) / Sterge (0)\n");
+            makeChoice(&head1);
+            break;
+        case 3:
+            if (!head3)
+            {
+                puts("Lista 2 nu exista, hai sa o cream.");
+                createDoubleLinkedList(&head3, &end3);
+            }
+            printf("Lista initiala (valori): ");
+            display(head3, data);
+            if (deleteMiddle(head3))
+            {
+                printf("Lista dupa stergere mijloc (valori): ");
+                display(head3, data);
+            }
+            printf("Doresti sa pastrezi lista 2 pentru a repeta exercitiul asupra ei sau sa o stergi?\nPastreaza (1) / Sterge (0)\n");
+            makeChoice(&head3);
+            break;
+        case 4:
+            if (!head1)
+            {
+                puts("Lista 1 nu exista, hai sa o cream.");
+                head1 = createSimpleLinkedList();
+            }
+            printf("Lista initiala (valori): ");
+            display(head1, data);
+            // inverseIterative(&head1);
+            inverseRecursive(&head1, NULL, head1);
+            printf("Lista dupa inversare (valori): "); display(head1,data);
+            printf("Doresti sa pastrezi lista pentru alte exercitii sau sa o stergi?\nPastreaza (1) / Sterge (0)\n");
+            makeChoice(&head1);
+            break;
+        case 5:
+            if (!head1)
+            {
+                puts("Lista 1 nu exista, hai sa o cream.");
+                head1 = createSimpleLinkedList();
+            }
+                puts("Hai sa cream lista pe care sa o adaugam la finalul listei 1.");
+                head2 = createSimpleLinkedList();
+            printf("Lista initiala (valori): ");
+            display(head1, data);
+            combineLists(head1, head2);
+            printf("Lista dupa concatenare (valori): ");
+            display(head1, data);
+            printf("Doresti sa pastrezi lista 1 pentru alte exercitii sau sa o stergi?\nPastreaza (1) / Sterge (0)\n");
+            makeChoice(&head1);
+            break;
+        default:
+            break;
+        }
+    } while (n != 0);
 
     if (head1)
         removeList(&head1);
     if (head3)
         removeList(&head3);
 
-    if (exerciseCounter == 5)
-        puts("\nGata programelul, ai rulat toate cele 5 exercitii! Porneste programul din nou ca sa testezi alte variante de liste!");
+    puts("Am inteles, ma voi inchide. Apasa orice tasta pentru a incheia...");
 
-    if (n == 0)
-        puts("Am inteles, ma voi inchide.");
-
-    getchar();
+    getch();
 }
