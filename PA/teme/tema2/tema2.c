@@ -145,7 +145,7 @@ int palindrom(Node *head)
     daca N impar atunci elimin elementul de pe pozitia N/2+1
     daca N par atunci elimin elementele de pe pozitiile N/2 si N/2+1
 */
-Node *createDoubleLinkedList() // functie de creare a unei liste dublu inlantuite, intrebam user-ul cate noduri sa creeze si ce valori sa puna in ele
+void createDoubleLinkedList(Node **head,Node **end) // functie de creare a unei liste dublu inlantuite, intrebam user-ul cate noduri sa creeze si ce valori sa puna in ele
 {
     int n, data;
     printf("CREARE LISTA DUBLU INLANTUITA\nCate noduri doriti, domnisorule/domnisoara? (macar 3, maxim 10): ");
@@ -156,7 +156,7 @@ Node *createDoubleLinkedList() // functie de creare a unei liste dublu inlantuit
             puts("Credeam ca avem o intelegere. Ti-am zis macar 3 si maxim 10...");
     } while (n < 3 || n > 10);
 
-    Node *head, *prev = NULL, *current;
+    Node *prev = NULL, *current;
     for (int i = 0; i < n; i++)
     {
         printf("Nodul %d, Introdu campul \"data\": ", i);
@@ -175,11 +175,11 @@ Node *createDoubleLinkedList() // functie de creare a unei liste dublu inlantuit
             prev->next = current;
 
         if (i == 0)
-            head = current;
-
+            *head = current;
+        if(i==n-1)
+            *end=current;
         prev = current;
     }
-    return head;
 }
 int deleteMiddle(Node *head)
 {
@@ -394,7 +394,7 @@ void makeChoice(Node **head) // functie folosita in main ca sa alegi daca vrei s
 // In main e doar un algoritm care sa faca programul interactiv pentru user... nu merge la infinit, in sensul ca nu poti rula acelasi exercitiu de mai multe ori din cauza modului de lucru cu liste, in comparatie cu simple array-uri.
 int main()
 {
-    Node *head1 = NULL, *head2 = NULL, *head3 = NULL;
+    Node *head1 = NULL, *head2 = NULL, *head3 = NULL,*end3=NULL;
     int n = -1, repeat = 1, chose1 = 0, chose2 = 0, chose3 = 0, chose4 = 0, chose5 = 0, exerciseCounter = 0;
 
     do
@@ -477,7 +477,7 @@ int main()
                 if (!head3)
                 {
                     puts("Mai intai hai sa cream o lista dublu inlantuita");
-                    head3 = createDoubleLinkedList();
+                    createDoubleLinkedList(&head3,&end3);
                 }
                 printf("Lista initiala (valori): ");
                 display(head3, data);
