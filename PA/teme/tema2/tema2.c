@@ -397,7 +397,7 @@ void makeChoice(Node **head) // functie folosita in main ca sa alegi daca vrei s
 int main()
 {
     Node *head1 = NULL, *head2 = NULL, *head3 = NULL, *end3 = NULL;
-    int n = -1, showLists = 0, chose1 = 0, chose2 = 0, chose3 = 0, chose4 = 0, chose5 = 0;
+    int n = -1;
     do
     {
         printf("Te rog sa alegi unul dintre exercitiile de mai jos sau 0, daca vrei sa iesi:\n"
