@@ -90,26 +90,11 @@ void displayArrayRecursive(int v[], int n)
 }
 
 // EXERCITIUL 5
-int v[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, k = 0;
 
-int progress(int array[9][9], int row, int column)
-{
-    if (array[row][column] == 0)
-        return 0;
-    return 1;
-}
-int solution(int array[9][9])
-{
-    for (int i = 0; i < 9; i++)
-        for (int j = 0; j < 9; j++)
-            if (array[i][j] == 0)
-                return 0;
-    return 1;
-}
 int check3x3(int array[9][9], int row, int column)
 {
-    for (int i = row - row % 3; i < row-row%3+3; i++)
-        for (int j = column - column % 3; j < column-column%3+3; j++)
+    for (int i = row - row % 3; i < row - row % 3 + 3; i++)
+        for (int j = column - column % 3; j < column - column % 3 + 3; j++)
         {
             if (array[i][j] == array[row][column] && row != i && column != j)
             {
@@ -129,10 +114,17 @@ int validate(int array[9][9], int row, int column)
         if (array[row][column] == array[i][column] && row != i)
             return 0;
     // check 3x3
-    if(!check3x3(array, row, column));
+    if (!check3x3(array, row, column))
         return 0;
     return 1;
-        
+}
+int solution(int array[9][9])
+{
+    for(int i=0;i<9;i++)
+        for(int j=0;j<9;j++)
+            if(array[i][j]==0||!validate(array,i,j))
+                return 0;
+    return 1;
 }
 void display(int array[9][9])
 {
@@ -143,44 +135,34 @@ void display(int array[9][9])
         puts("");
     }
 }
-int solveSudoku(int array[9][9], int row, int column)
+void solveSudoku(int array[9][9], int row, int column)
 {
-    int ok;
-    for (int i = row; i < 9; i++)
-        for (int j = column; j < 9; j++)
-        {
-            if (array[i][j] == 0)
-            {
-                do
-                {
-                    ok=0;
-                    if (k < 9)
-                    {
-                        k++;
-                        array[i][j] = v[k];
-                    }
-                    if(validate(array,i,j))
-                        ok=1;
-                }while (ok==0&&k<9);
 
-                if (k == 9)
+        for (int i = row; i < 9; i++)
+            for (int j = column; j < 9; j++)
+            {
+                if (array[i][j] == 0)
                 {
-                    k = 0;
-                }
-                if(ok)
+                    for(int k=1;k<=10;k++)
                     {
-                        solveSudoku(array,i,j);
-                    }
-                else
-                {
-                    array[i][j]=0;
-                    i=9;
-                    j=9;
+                        if(solution(array))
+                                {
+                                    return;
+                                }
+                        array[i][j] = k;
+                        if (validate(array, i, j)&&k<10)
+                        {
+                            solveSudoku(array,i,0);
+                        }
+                        else if(k>=9)
+                        {
+                            array[i][j]=0;
+                            return;
+                        }
+                    }  
                 }
             }
-        }
 }
-
 int main()
 {
     // EXERCITIUL 1
@@ -217,11 +199,25 @@ int main()
         {6, 0, 0, 2, 4, 0, 0, 8, 0},
         {0, 0, 4, 5, 0, 0, 0, 9, 3},
         {5, 0, 0, 0, 0, 0, 0, 0, 0}};
+
+    // int array[9][9] = {  //solutie
+    //     {7, 4, 2, 6, 1, 3, 9, 5, 8},
+    //     {1, 8, 5, 4, 9, 2, 3, 6, 7},
+    //     {9, 6, 3, 8, 5, 7, 4, 2, 1},
+    //     {4, 7, 1, 9, 6, 5, 8, 3, 2},
+    //     {3, 9, 8, 7, 2, 4, 5, 1, 6},
+    //     {2, 5, 6, 3, 8, 1, 7, 4, 9},
+    //     {6, 3, 7, 2, 4, 9, 1, 8, 5},
+    //     {8, 1, 4, 5, 7, 6, 2, 9, 3},
+    //     {5, 2, 9, 1, 3, 8, 6, 7, 4}};
+
     display(array);
     puts("");
     solveSudoku(array, 0, 0);
     display(array);
-    // printf("%d\n",validate(array,1,0));
     // EXERCITIUL 6
+    /*
+    Tail Recursion este o functie a carei ultime instructiuni este un autoapel, doar ca acel autoapel nu trebuie sa contina variabile sau parametri pe care functia in sine ii foloseste 
+    */
     return 0;
 }
