@@ -137,7 +137,6 @@ void display(int array[9][9])
 }
 void solveSudoku(int array[9][9], int row, int column)
 {
-
         for (int i = row; i < 9; i++)
             for (int j = column; j < 9; j++)
             {
@@ -182,13 +181,23 @@ int main()
     // EXERCITIUL 4
     /*
         Explic divide et impera unui copil de 5 ani: avem 6 mere de diferite dimensiuni fiecare, aranjate aleatoriu pe masa. Noi vrem sa le aranjam de la cel mai mic la cel mai mare. Alegem metoda numita "divide et impera".
-        La dispozitia noastra avem bucati de carton pe care le vom folosi ca pe niste pereti. Ca sa ordonam merele, incepem prin a pune cate un carton in mijlocul fiecarei perechi de mere, astfel incat ajungem sa avem
-        cate un singur mar cuprins intre 2 cartoane sau care are un carton ori in stanga, ori in dreapta lui (adica e primul sau ultimul mar din sirul de mere). Mai pe scurt, vom plasa primul carton dupa al 3-lea
-        mar, apoi vom plasa un carton dupa al 2-lea mar si inca unul dupa al 5-lea mar. Acum avem zone cu un mar si zone cu 2 mere. Ordonam merele din zonele de cate 2 mere. Acum ridicam peretele de dupa marul 2 si marul 5
-        si ordonam din nou cele doua zone cu mere. Ca ultim pas, ridicam ultimul carton, cel care a fost plasat primul si acum ordonam cele doua zone cu mere. Gata, acum avem toate cele 6 mere ordonate crescator dupa marimea lor.
+        La dispozitia noastra avem bucati de carton pe care le vom folosi ca pe niste pereti. Ca sa ordonam merele, incepem prin a pune cate un carton in mijlocul fiecarui set de mere, unde primul set sunt 
+        cele 6 mere ale noastre, astfel incat ajungem sa avem cate un singur mar cuprins intre 2 cartoane sau care are un carton ori in stanga, ori in dreapta lui (adica e primul sau ultimul mar din sirul de mere). 
+        Mai pe scurt, vom plasa primul carton dupa al 3-lea mar, apoi vom plasa un carton dupa al 2-lea mar si inca unul dupa al 5-lea mar. Acum avem zone cu un mar si zone cu 2 mere. Ordonam merele din zonele de cate 2 mere.
+        Acum ridicam peretele de dupa marul 2 si marul 5 si ordonam din nou cele doua zone cu mere. Ca ultim pas, ridicam ultimul carton, 
+        adica cel care a fost plasat primul, si acum ordonam cele doua zone cu mere. Gata, acum avem toate cele 6 mere ordonate crescator dupa marimea lor.
     */
+    printf("\nEXERCITIUL 4\nExplic unui copil de 5 ani divide et impera:\n"
+    "Avem 6 mere de diferite dimensiuni fiecare, aranjate aleatoriu pe masa. Noi vrem sa le aranjam de la cel mai mic la cel mai mare. Alegem metoda numita \"divide et impera\". "
+    "La dispozitia noastra avem bucati de carton pe care le vom folosi ca pe niste pereti. Ca sa ordonam merele, incepem prin a pune cate un carton in mijlocul fiecarui set de mere, unde primul set sunt "
+    "cele 6 mere ale noastre, astfel incat ajungem sa avem "
+    "cate un singur mar cuprins intre 2 cartoane sau care are un carton ori in stanga, ori in dreapta lui (adica e primul sau ultimul mar din sirul de mere). Mai pe scurt, vom plasa primul carton dupa al 3-lea "
+    "mar, apoi vom plasa un carton dupa al 2-lea mar si inca unul dupa al 5-lea mar. Acum avem zone cu un mar si zone cu 2 mere. Ordonam merele din zonele de cate 2 mere. Acum ridicam peretele de dupa marul 2 si marul 5 "
+    "si ordonam din nou cele doua zone cu mere. Ca ultim pas, ridicam ultimul carton, adica cel care a fost plasat primul, si acum ordonam cele doua zone cu mere. Gata, acum avem toate cele 6 mere ordonate crescator dupa "
+    "marimea lor.\n"
+    );
     // EXERCITIUL 5
-    printf("EXERCITIUL 5\nRezolvare sudoku folosind backtracking\n");
+    printf("\nEXERCITIUL 5\nRezolvare sudoku folosind backtracking\n");
     int array[9][9] = {
         {0, 0, 0, 0, 0, 0, 0, 0, 8},
         {1, 8, 0, 0, 0, 2, 3, 0, 0},
@@ -210,14 +219,19 @@ int main()
     //     {6, 3, 7, 2, 4, 9, 1, 8, 5},
     //     {8, 1, 4, 5, 7, 6, 2, 9, 3},
     //     {5, 2, 9, 1, 3, 8, 6, 7, 4}};
-
+    printf("\nMatricea initiala:\n");
     display(array);
-    puts("");
     solveSudoku(array, 0, 0);
+    printf("\nMatricea dupa rezolvare:\n");
     display(array);
     // EXERCITIUL 6
     /*
-    Tail Recursion este o functie a carei ultime instructiuni este un autoapel, doar ca acel autoapel nu trebuie sa contina variabile sau parametri pe care functia in sine ii foloseste 
+    Tail Recursion este o functie a carei ultime instructiuni este un autoapel, doar ca acel autoapel nu trebuie sa fie insotit de alti parametri transmisi
+    la randul lor autoapelului respectiv. Acest lucru ajuta compilatorul la eficienta.
     */
+   printf("\nEXERCITIUL 6:\n"
+    "Tail Recursion este o functie a carei ultime instructiuni este un autoapel, doar ca acel autoapel nu trebuie sa fie insotit de alti parametri transmisi "
+    "la randul lor autoapelului respectiv. Acest lucru ajuta compilatorul la eficienta."
+    );
     return 0;
 }
