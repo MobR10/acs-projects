@@ -21,15 +21,13 @@ void merge(void *array, int left,int middle,int right,size_t elemSize,int (*comp
     void *leftArray=malloc(elemSize*leftLength);
     void *rightArray=malloc(elemSize*rightLength);
 
-    for(size_t i=0;i<leftLength;i++)
-        mempcpy(leftArray+i*elemSize,array+(left+i)*elemSize,elemSize);
+    for(size_t i=0;i<leftLength;i++)    //leftArray[i]=array[left+i];
+        for(size_t j=0;j<elemSize;j++)
+        *((char*)leftArray+i*elemSize+j)=*((char*)array+(left+i)*elemSize+j); // asta e varianta manuala, copiaza octet cu octet
+        //mempcpy(leftArray+i*elemSize,array+(left+i)*elemSize,elemSize); // asta e cu memcpy si e ca mai jos, cu un singur for loop
     
-    //leftArray[i]=array[left+i];
-        //*((char*)leftArray+i*elemSize)=*((char*)array+(left+i)*elemSize);
-    
-    for(size_t i=0;i<rightLength;i++)
+    for(size_t i=0;i<rightLength;i++) //rightArray[i]=array[middle+1+i];
         memcpy(rightArray+i*elemSize,array+(middle+1+i)*elemSize,elemSize);
-        //*((char*)rightArray+i*elemSize)=*((char*)array+(middle+1+i)*elemSize); //rightArray[i]=array[middle+1+i];
     
     size_t i=0,j=0;
     
@@ -38,13 +36,11 @@ void merge(void *array, int left,int middle,int right,size_t elemSize,int (*comp
         if(compare(leftArray+i*elemSize,rightArray+j*elemSize)<0)
             {
                 memcpy(array+left*elemSize,leftArray+i*elemSize,elemSize);
-                //*((char*)array+left*elemSize)=*((char*)leftArray+i*elemSize);
                 i++;
             }
         else
         {
             memcpy(array+left*elemSize,rightArray+j*elemSize,elemSize);
-            //*((char*)array+left*elemSize)=*((char*)rightArray+j*elemSize);
                 j++;
         }
         left++;
@@ -53,7 +49,6 @@ void merge(void *array, int left,int middle,int right,size_t elemSize,int (*comp
     while(i<leftLength)
     {
         memcpy(array+left*elemSize,leftArray+i*elemSize,elemSize);
-        // *((char*)array+left*elemSize)=*((char*)leftArray+i*elemSize);
         i++;
         left++;
     }
@@ -61,7 +56,6 @@ void merge(void *array, int left,int middle,int right,size_t elemSize,int (*comp
     while(j<rightLength)
     {
         memcpy(array+left*elemSize,rightArray+j*elemSize,elemSize);
-        //*((char*)array+left*elemSize)=*((char*)rightArray+j*elemSize);
         j++;
         left++;
     }
@@ -70,7 +64,6 @@ void merge(void *array, int left,int middle,int right,size_t elemSize,int (*comp
     free(rightArray);
 
 }
-
 void mergeSort(void *array,int left, int right, size_t elemSize,int (*compare)(const void*a,const void*b))
 {
     if(left<right)
@@ -107,7 +100,7 @@ int main()
     char c[5]={'e','d','c','b','a'};
     mergeSort(v,0,9,sizeof(int),compareInt);
     mergeSort(w,0,4,sizeof(float),compareFloat);
-    mergeSort(c,0,5,sizeof(char),compareChar);
+    mergeSort(c,0,4,sizeof(char),compareChar);
     display(v,10);
     puts("");
     for(int i=0;i<5;i++)
