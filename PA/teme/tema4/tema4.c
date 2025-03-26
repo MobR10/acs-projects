@@ -145,10 +145,34 @@ void mergeSort(void *array, int left, int right, size_t elemSize, int (*compare)
         merge(array, left, middle, right, elemSize, compare);
     }
 }
-// void quickSort(void *array, size_t elemNum, size_t elemSize, int (*compare)(const void *a, const void *b))
-// {
+size_t partition(void *array,size_t low,size_t high,size_t elemSize,int (*compare)(const void* a, const void*b))
+{
+    void *temp=malloc(elemSize);
+    memcpy(temp,array+high*elemSize,elemSize);
+    size_t i=low-1;
 
-// }
+    for(size_t j=low;j<high;j++)
+        {
+            if(compare(array+j*elemSize,temp)<=0)
+                {
+                    i++;
+                    if(j>i)
+                    swap(array+j*elemSize,array+i*elemSize,elemSize);
+                }
+        }
+        free(temp);
+        return i; 
+}
+void quickSort(void *array,size_t low,size_t high, size_t elemSize, int (*compare)(const void *a, const void *b))
+{
+    if(low < high)
+    {
+        size_t pivot=partition(array,low,high,elemSize,compare);
+
+        quickSort(array,low,pivot-1,elemSize,compare);
+        quickSort(array,pivot+1,high,elemSize,compare);
+    }
+}
 
 int main()
 {
@@ -156,25 +180,25 @@ int main()
     double w[10] = {90.675, -60.980, 86.10, 4.99, 30.2682854, -29.178584028, -86.58683, -51.1535, -76.40793, 32.169};
     char c[10] = {'C', 'Y', 'E', 'B', 'D', 'W', 'a', 'O', 's', 'Y'};
 
-    bubbleSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
-    bubbleSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
-    bubbleSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
+    // bubbleSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
+    // bubbleSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
+    // bubbleSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
 
-    insertionSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
-    insertionSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
-    insertionSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
+    // insertionSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
+    // insertionSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
+    // insertionSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
 
-    selectionSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
-    selectionSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
-    selectionSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
+    // selectionSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
+    // selectionSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
+    // selectionSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
 
-    mergeSort(v, 0, sizeof(v) / sizeof(int) - 1, sizeof(int), compareInt);
-    mergeSort(w, 0, sizeof(w) / sizeof(double) - 1, sizeof(double), compareDouble);
-    mergeSort(c, 0, sizeof(c) / sizeof(char) - 1, sizeof(char), compareChar);
+    //mergeSort(v, 0, sizeof(v) / sizeof(int) - 1, sizeof(int), compareInt);
+    // mergeSort(w, 0, sizeof(w) / sizeof(double) - 1, sizeof(double), compareDouble);
+    // mergeSort(c, 0, sizeof(c) / sizeof(char) - 1, sizeof(char), compareChar);
 
-    // quickSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
-    // quickSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
-    // quickSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
+    quickSort(v,0, sizeof(v) / sizeof(int)-1, sizeof(int), compareInt);
+    quickSort(w,0, sizeof(w) / sizeof(double)-1, sizeof(double), compareDouble);
+    quickSort(c,0, sizeof(c) / sizeof(char)-1, sizeof(char), compareChar);
 
     displayIntArray(v, sizeof(v) / sizeof(int));
     displayFloatArray(w, sizeof(w) / sizeof(double));
