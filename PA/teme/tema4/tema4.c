@@ -64,8 +64,8 @@ void bubbleSort(void *array, size_t elemNum, size_t elemSize, int (*compare)(con
     for (size_t i = 0; i < elemNum; i++)
         for (size_t j = 0; j < elemNum - 1; j++)
         {
-            if (compare(array + j * elemSize, array + (j + 1) * elemSize) > 0)
-                swap(array + j * elemSize, array + (j + 1) * elemSize, elemSize);
+            if (compare((char*)array + j * elemSize,(char*) array + (j + 1) * elemSize) > 0)
+                swap((char*)array + j * elemSize,(char*)array + (j + 1) * elemSize, elemSize);
         }
 }
 void insertionSort(void *array, size_t elemNum, size_t elemSize, int (*compare)(const void *a, const void *b))
@@ -74,12 +74,12 @@ void insertionSort(void *array, size_t elemNum, size_t elemSize, int (*compare)(
     for (size_t i = 1; i < elemNum; i++)
     {
         for (size_t j = 0; j < i; j++)
-            if (compare(array + i * elemSize, array + j * elemSize) < 0)
+            if (compare((char*)array + i * elemSize,(char*) array + j * elemSize) < 0)
             {
-                memcpy(temp, array + i * elemSize, elemSize);
+                memcpy(temp, (char*)array + i * elemSize, elemSize);
                 for (size_t k = i; k > j; k--)
-                    memcpy(array + k * elemSize, array + (k - 1) * elemSize, elemSize);
-                memcpy(array + j * elemSize, temp, elemSize);
+                    memcpy((char*)array + k * elemSize,(char*) array + (k - 1) * elemSize, elemSize);
+                memcpy((char*)array + j * elemSize, temp, elemSize);
             }
     }
     free(temp);
@@ -91,13 +91,13 @@ void selectionSort(void *array, size_t elemNum, size_t elemSize, int (*compare)(
     for (size_t i = 0; i < elemNum - 1; i++)
     {
         for (size_t j = i + 1; j < elemNum; j++)
-            if (compare(array + i * elemSize, array + j * elemSize) > 0)
-                swap(array + i * elemSize, array + j * elemSize, elemSize);
-        memcpy(min, array + (i + 1) * elemSize, elemSize);
+            if (compare((char*)array + i * elemSize,(char*)array + j * elemSize) > 0)
+                swap((char*)array + i * elemSize,(char*)array + j * elemSize, elemSize);
+        memcpy(min,(char*)array + (i + 1) * elemSize, elemSize);
     }
     free(min);
 }
-void merge(void *array, int left, int middle, int right, size_t elemSize, int (*compare)(const void *a, const void *b))
+void merge(void *array, size_t left, size_t middle, size_t right, size_t elemSize, int (*compare)(const void *a, const void *b))
 {
     size_t leftLength = (size_t)(middle - left + 1), rightLength = (size_t)(right - middle);
 
@@ -110,20 +110,20 @@ void merge(void *array, int left, int middle, int right, size_t elemSize, int (*
     // mempcpy(leftArray+i*elemSize,array+(left+i)*elemSize,elemSize); // asta e cu memcpy si e ca mai jos, cu un singur for loop
 
     for (size_t i = 0; i < rightLength; i++) // rightArray[i]=array[middle+1+i];
-        memcpy(rightArray + i * elemSize, array + (middle + 1 + i) * elemSize, elemSize);
+        memcpy((char*)rightArray + i * elemSize,(char*)array + (middle + 1 + i) * elemSize, elemSize);
 
     size_t i = 0, j = 0;
 
     while (i < leftLength && j < rightLength)
     {
-        if (compare(leftArray + i * elemSize, rightArray + j * elemSize) < 0)
+        if (compare((char*)leftArray + i * elemSize,(char*) rightArray + j * elemSize) < 0)
         {
-            memcpy(array + left * elemSize, leftArray + i * elemSize, elemSize);
+            memcpy((char*)array + left * elemSize,(char*) leftArray + i * elemSize, elemSize);
             i++;
         }
         else
         {
-            memcpy(array + left * elemSize, rightArray + j * elemSize, elemSize);
+            memcpy((char*)array + left * elemSize,(char*) rightArray + j * elemSize, elemSize);
             j++;
         }
         left++;
@@ -131,14 +131,14 @@ void merge(void *array, int left, int middle, int right, size_t elemSize, int (*
 
     while (i < leftLength)
     {
-        memcpy(array + left * elemSize, leftArray + i * elemSize, elemSize);
+        memcpy((char*)array + left * elemSize, (char*)leftArray + i * elemSize, elemSize);
         i++;
         left++;
     }
 
     while (j < rightLength)
     {
-        memcpy(array + left * elemSize, rightArray + j * elemSize, elemSize);
+        memcpy((char*)array + left * elemSize,(char*) rightArray + j * elemSize, elemSize);
         j++;
         left++;
     }
@@ -146,11 +146,11 @@ void merge(void *array, int left, int middle, int right, size_t elemSize, int (*
     free(leftArray);
     free(rightArray);
 }
-void mergeSort(void *array, int left, int right, size_t elemSize, int (*compare)(const void *a, const void *b))
+void mergeSort(void *array, size_t left, size_t right, size_t elemSize, int (*compare)(const void *a, const void *b))
 {
     if (left < right)
     {
-        int middle = (left + right) / 2;
+        size_t middle = (left + right) / 2;
         mergeSort(array, left, middle, elemSize, compare);
         mergeSort(array, middle + 1, right, elemSize, compare);
         merge(array, left, middle, right, elemSize, compare);
@@ -159,15 +159,15 @@ void mergeSort(void *array, int left, int right, size_t elemSize, int (*compare)
 size_t partition(void *array, size_t low, size_t high, size_t elemSize, int (*compare)(const void *a, const void *b))
 {
     void *temp = malloc(elemSize);
-    memcpy(temp, array + high * elemSize, elemSize);
+    memcpy(temp,(char*) array + high * elemSize, elemSize);
     size_t i = low - 1;
     for (size_t j = low; j <= high; j++)
     {
-        if (compare(array + j * elemSize, temp) <= 0)
+        if (compare((char*)array + j * elemSize, temp) <= 0)
         {
             i++;
             if (j > i)
-                swap(array + j * elemSize, array + i * elemSize, elemSize);
+                swap((char*)array + j * elemSize, (char*)array + i * elemSize, elemSize);
         }
     }
     free(temp);
@@ -198,7 +198,7 @@ int binarySearch(void *array, size_t left, size_t right, size_t elemSize, int (*
     while (!found && left <= right && (int)left>=0 && (int)right>=0)
     {
         middle = (left + right) / 2;
-        if ((compareResult = compare(array + middle * elemSize, &wanted)) == 0)
+        if ((compareResult = compare((char*)array + middle * elemSize, &wanted)) == 0)
             found = 1;
         else if (compareResult < 0)
         {
@@ -231,6 +231,12 @@ int compareTime(const void *a, const void *b)
     return 0;
 }
 
+// Functii exercitiul 5
+void radixSort(void *array,size_t elemNum,size_t elemSize,int (*compare)(void const*a, void const*b))
+{
+
+}
+
 int main()
 {
 // EXERCITIU 1
@@ -238,7 +244,7 @@ int main()
     int v[10] = {-47, 46, -91, -64, 100, 92, -20, 83, -12, 10};
     double w[10] = {90.675, -60.980, 86.10, 4.99, 30.2682854, -29.178584028, -86.58683, -51.1535, -76.40793, 32.169};
     char c[10] = {'C', 'Y', 'E', 'B', 'D', 'W', 'a', 'O', 's', 'Y'};
-
+    
     bubbleSort(v, sizeof(v) / sizeof(int), sizeof(int), compareInt);
     bubbleSort(w, sizeof(w) / sizeof(double), sizeof(double), compareDouble);
     bubbleSort(c, sizeof(c) / sizeof(char), sizeof(char), compareChar);
@@ -266,10 +272,10 @@ int main()
 
 // EXERCITIUL 2
 #if EXERCITIUL_2 == 1
-    clock_t time_req;
+    clock_t timePassed;
     int length = 10000, *vector, *vectorCopy;
-    vector = (int *)malloc(length * sizeof(int));
-    vectorCopy = (int *)malloc(length * sizeof(int));
+    vector = (int *)malloc((size_t)length * sizeof(int));
+    vectorCopy = (int *)malloc((size_t)length * sizeof(int));
     if (!vector)
     {
         puts("Nu s-a putut aloca memorie pentru vector");
@@ -287,33 +293,33 @@ int main()
         vectorCopy[i] = vector[i];
     }
 
-    time_req = clock();
-    bubbleSort(vectorCopy, length, sizeof(int), compareInt);
-    time_req = clock() - time_req;
-    printf("Timp pentru bubbleSort: %fs\n", (float)time_req / CLOCKS_PER_SEC);
+    timePassed = clock();
+    bubbleSort(vectorCopy, (size_t)length, sizeof(int), compareInt);
+    timePassed = clock() - timePassed;
+    printf("Timp pentru bubbleSort: %fs\n", (float)timePassed / CLOCKS_PER_SEC);
     resetVector(vector, vectorCopy, length);
 
-    time_req = clock();
-    insertionSort(vectorCopy, length, sizeof(int), compareInt);
-    time_req = clock() - time_req;
-    printf("Timp pentru insertionSort: %fs\n", (float)time_req / CLOCKS_PER_SEC);
+    timePassed = clock();
+    insertionSort(vectorCopy, (size_t)length, sizeof(int), compareInt);
+    timePassed= clock() - timePassed;
+    printf("Timp pentru insertionSort: %fs\n", (float)timePassed / CLOCKS_PER_SEC);
     resetVector(vector, vectorCopy, length);
 
-    time_req = clock();
-    selectionSort(vectorCopy, length, sizeof(int), compareInt);
-    time_req = clock() - time_req;
-    printf("Timp pentru selectionSort: %fs\n", (float)time_req / CLOCKS_PER_SEC);
+    timePassed = clock();
+    selectionSort(vectorCopy, (size_t)length, sizeof(int), compareInt);
+    timePassed= clock() - timePassed;
+    printf("Timp pentru selectionSort: %fs\n", (float)timePassed / CLOCKS_PER_SEC);
     resetVector(vector, vectorCopy, length);
 
-    time_req = clock();
-    mergeSort(vectorCopy, 0, length - 1, sizeof(int), compareInt);
-    time_req = clock() - time_req;
-    printf("Timp pentru mergeSort: %fs\n", (float)time_req / CLOCKS_PER_SEC);
+    timePassed= clock();
+    mergeSort(vectorCopy, 0, (size_t)length - 1, sizeof(int), compareInt);
+    timePassed = clock() - timePassed;
+    printf("Timp pentru mergeSort: %fs\n", (float)timePassed / CLOCKS_PER_SEC);
 
-    time_req = clock();
-    quickSort(vector, 0, length - 1, sizeof(int), compareInt);
-    time_req = clock() - time_req;
-    printf("Timp pentru quickSort: %fs\n", (float)time_req / CLOCKS_PER_SEC);
+    timePassed= clock();
+    quickSort(vector, 0, (size_t)length - 1, sizeof(int), compareInt);
+    timePassed = clock() - timePassed;
+    printf("Timp pentru quickSort: %fs\n", (float)timePassed / CLOCKS_PER_SEC);
 
     free(vector);
     free(vectorCopy);
@@ -428,8 +434,10 @@ int main()
         }
     }
 #endif
+
 // EXERCITIUL 5
 #if EXERCITIUL_5 == 1
-
+    int arr2[10]={-47, 46, -91, -64, 100, 92, -20, 83, -12, 10};
+    raidxSort(arr2,sizeof(arr2)/sizeof(int),compareInt);
 #endif
 }
