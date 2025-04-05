@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #define QUEUE_MAX 52
-#include "ex1.h"
+#include "./../ex1.h"
 
 int pachetGol(int pachet[])
 {
