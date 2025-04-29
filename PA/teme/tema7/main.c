@@ -1,10 +1,10 @@
-/*parcurgerge  graf cu DFS/BFS*/
-
-// Imi cer scuze in avans
-//  nu te iert
-
 #include <stdlib.h>
 #include <stdio.h>
+
+#define QUEUE_MAX 50
+#define STACK_MAX 50
+
+#include "stacks_queues.h"
 
 struct node
 {
@@ -21,30 +21,22 @@ struct graph
 };
 typedef struct graph Graph;
 
-/// utils
-void checkAllocation(void *ptr)
-{
-    if (ptr == NULL)
-    {
-        puts("Memory allocation failed!");
-        exit(1);
-    }
-}
 Node *createNode(int data)
 {
-    Node *new =(Node*) malloc(sizeof(Node));
+    Node *new = (Node *)malloc(sizeof(Node));
     checkAllocation(new);
     new->data = data;
     new->next = NULL;
     return new;
 }
+
 Graph *createGraph(int vertices)
 {
-    Graph *graph =(Graph*) malloc(sizeof(Graph));
+    Graph *graph = (Graph *)malloc(sizeof(Graph));
     graph->vertices = vertices;
-    graph->adjacencyList =(Node**) malloc((unsigned long long int)(vertices+1) * sizeof(Node *));
+    graph->adjacencyList = (Node **)malloc((unsigned long long int)(vertices + 1) * sizeof(Node *));
 
-    graph->visited =(int*) malloc(sizeof(int) * (unsigned long long int)(vertices+1));
+    graph->visited = (int *)malloc(sizeof(int) * (unsigned long long int)(vertices + 1));
     for (int i = 1; i <= vertices; i++)
     {
         graph->adjacencyList[i] = NULL;
@@ -53,9 +45,9 @@ Graph *createGraph(int vertices)
     return graph;
 }
 
-void addEdge(Graph *graph, int source, int destination)
+// function that adds an edge between 2 nodes in a not oriented graph
+void addEdgeNotOriented(Graph *graph, int source, int destination)
 {
-
 
     Node *node = createNode(source);
     node->next = graph->adjacencyList[destination];
@@ -65,46 +57,25 @@ void addEdge(Graph *graph, int source, int destination)
     graph->adjacencyList[source] = node;
 }
 
-void insertEdges(Graph *graph, int edges)
+void addEdgeOriented(Graph *graph, int source, int destination)
+{
+    Node *node = createNode(destination);
+    node->next = graph->adjacencyList[source];
+    graph->adjacencyList[source] = node;
+}
+
+void insertEdges(Graph *graph, int edges, int isOriented)
 {
     int src, dest, i;
     printf("adauga %d muchii (de la 1 la %d)\n", edges, graph->vertices);
     for (i = 0; i < edges; i++)
     {
         scanf("%d%d", &src, &dest);
-        addEdge(graph, src, dest);
+        if (!isOriented)
+            addEdgeNotOriented(graph, src, dest);
+        else
+            addEdgeOriented(graph, src, dest);
     }
-}
-/// bfs utils
-int isEmpty(Node *queue)
-{
-    return queue == NULL;
-}
-
-void enqueue(Node **queue, int data)
-{
-    Node *new_node = createNode(data);
-
-    if (isEmpty(*queue))
-        *queue = new_node;
-    else
-    {
-        Node *temp = (*queue);
-        while (temp->next)
-        {
-            temp = temp->next;
-        }
-        temp->next = new_node;
-    }
-}
-
-int dequeue(Node **queue)
-{
-    int data = (*queue)->data;
-    Node *temp = *queue;
-    *queue = (*queue)->next;
-    free(temp);
-    return data;
 }
 
 void printGraph(Graph *graph)
@@ -113,32 +84,24 @@ void printGraph(Graph *graph)
     for (i = 1; i <= graph->vertices; i++)
     {
         Node *adjacencyList = graph->adjacencyList[i];
-        printf("%d: ",i);
+        printf("%d: ", i);
         while (adjacencyList)
         {
             printf("%d ", adjacencyList->data);
-            adjacencyList= adjacencyList->next;
+            adjacencyList = adjacencyList->next;
         }
         printf("\n");
     }
 }
 
-void printQueue(Node *queue)
-{
-    while (queue != NULL)
-    {
-        printf("%d ", queue->data);
-        queue =queue->next;
-    }
-}
-
 void wipeVisitedList(Graph *graph)
 {
-    for (int i = 1;i <= graph->vertices; i++)
+    for (int i = 1; i <= graph->vertices; i++)
     {
         graph->visited[i] = 0;
     }
 }
+
 // parcurgeri
 void DFS(Graph *graph, int currentVertex)
 {
@@ -159,16 +122,17 @@ void DFS(Graph *graph, int currentVertex)
     }
 }
 
-void BFS(Graph *graph, int start)
+void BFS(Graph *graph, int start, Queue **front, Queue **rear)
 {
     Node *queue = NULL;
 
     graph->visited[start] = 1;
-    enqueue(&queue, start);
+    enqueue(front, rear, start);
 
     while (!isEmpty(queue))
     {
-        int current = dequeue(&queue);
+        int current = (*front)->data;
+        dequeue(front, rear);
         printf("%d ", current);
 
         Node *adjacencyList = graph->adjacencyList[current];
@@ -180,44 +144,95 @@ void BFS(Graph *graph, int start)
             if (graph->visited[neighbour] == 0)
             {
                 graph->visited[neighbour] = 1;
-                enqueue(&queue, neighbour);
+                enqueue(front, rear, neighbour);
             }
             adjacencyList = adjacencyList->next;
         }
     }
 }
 
+// EX2
+int isPath(Graph *graph, int source, int destination)
+{
+    if (source == destination)
+        return 1;
+
+    graph->visited[source] = 1;
+
+    Node *adjacencyList = graph->adjacencyList[source];
+
+    while (adjacencyList != NULL)
+    {
+        int neighbour = adjacencyList->data;
+        if (!graph->visited[neighbour])
+        {
+            if (isPath(graph, neighbour, destination))
+                return 1; // Path found through neighbor
+        }
+        adjacencyList = adjacencyList->next;
+    }
+
+    return 0; // No path found through any neighbors
+}
+
 int main()
 {
-
+    // variables to be read and used to create both oriented and not oriented graph
     int vertices;
     int edges;
     int startingVertex;
 
-    printf("cate noduri are graful?");
-    scanf("%d", &vertices);
+    Queue *front = NULL, *rear = NULL; // initialize queue for BFS
 
-    printf("cate muchii are graful?");
-    scanf("%d", &edges);
+    // NOT ORIENTED GRAPH
 
-    Graph *graph = createGraph(vertices);
+    // printf("cate noduri are graful?");
+    // scanf("%d", &vertices);
 
-    insertEdges(graph,edges);
+    // printf("cate muchii are graful?");
+    // scanf("%d", &edges);
 
-    printf("de unde plecam in DFS?");
-    scanf("%d", &startingVertex);
+    // Graph *graph = createGraph(vertices);
 
-    printf("parcurgere cu DFS:");
-    DFS(graph, startingVertex);
+    // insertEdges(graph, edges, 0);
 
-    wipeVisitedList(graph);
-    printf("\n");
+    // printf("de unde plecam in DFS?");
+    // scanf("%d", &startingVertex);
 
-    printf("de unde plecam in BFS?");
-    scanf("%d", &startingVertex);
+    // printf("parcurgere cu DFS:");
+    // DFS(graph, startingVertex);
 
-    printf("parcurgere cu BFS:");
-    BFS(graph, startingVertex);
+    // wipeVisitedList(graph);
+    // printf("\n");
+
+    // printf("de unde plecam in BFS?");
+    // scanf("%d", &startingVertex);
+
+    // printf("parcurgere cu BFS:");
+    // BFS(graph, startingVertex, &front, &rear);
+    // DFS(graph, 0);
+
+    // ORIENTED GRAPH
+
+    // printf("Cate noduri sa aiba graful orientat? ");
+    // scanf("%d", &vertices);
+    // Graph *ograph = createGraph(vertices);
+
+    // printf("Cate muchii? ");
+    // scanf("%d", &edges);
+
+    // insertEdges(ograph, edges, 1);
+
+    Graph *ograph=createGraph(5);
+    addEdgeOriented(ograph,0,1);
+    addEdgeOriented(ograph,0,2);
+    addEdgeOriented(ograph,1,3);
+    addEdgeOriented(ograph,1,2);
+    addEdgeOriented(ograph,2,3);
+    addEdgeOriented(ograph,3,4);
+    addEdgeOriented(ograph,2,4);
+
+    printf("%d",isPath(ograph,2,4));
 
     return 0;
 }
