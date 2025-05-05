@@ -14,9 +14,17 @@ struct node
 };
 typedef struct node Node;
 
+struct edge
+{
+    int src,dest;
+    int weight;
+};
+typedef struct edge Edge;
+
 struct graph
 {
     int vertices;
+    int *edges;
     int *values,*setValues; // values[i] is the value for node i and setValues[i]=0/1 whether a node's value has been set (for when the node is first created)
     int *visited;
     Node **adjacencyList;
