@@ -120,12 +120,12 @@ void unionSet(int u, int v, int parent[], int rank[])
 }
 
 // Constructs MST using Kruskal's algorithm and saves it to a CSV
-void kruskalMST(int numNodes, int **edges, size_t rows)
+void kruskalMST(int numNodes, int **edges, int rows)
 {
-    qsort(edges, rows, sizeof(edges[0]), comparator); // Sort edges by weight
+    qsort(edges, (size_t)rows, sizeof(edges[0]), comparator); // Sort edges by weight
 
-    int *parent = malloc(numNodes * sizeof(int));
-    int *rank = malloc(numNodes * sizeof(int));
+    int *parent = malloc((size_t)numNodes * sizeof(int));
+    int *rank = malloc((size_t)numNodes * sizeof(int));
     makeSet(parent, rank, numNodes);
 
     FILE *output = fopen(OUTPUT_KRUSKAL, "wt");
@@ -138,7 +138,7 @@ void kruskalMST(int numNodes, int **edges, size_t rows)
     int totalCost = 0;
     fprintf(output, "Edges in Minimum Spanning Tree (Kruskal):\n");
     printf("\nEdges in Minimum Spanning Tree (Kruskal):\n");
-    for (size_t i = 0, count = 0; i < rows && count < numNodes - 1; i++)
+    for (int i = 0, count = 0; i < rows && count < numNodes - 1; i++)
     {
         int u = edges[i][0];
         int v = edges[i][1];
@@ -249,9 +249,9 @@ void primMST(int **edges, int numEdges, int numNodes)
     AdjList *adjList = buildAdjList(edges, numEdges, numNodes);
 
     // Initialization
-    int *parent = malloc(numNodes * sizeof(int));
-    int *key = malloc(numNodes * sizeof(int));
-    bool *mstSet = malloc(numNodes * sizeof(bool));
+    int *parent = malloc((size_t)numNodes * sizeof(int));
+    int *key = malloc((size_t)numNodes * sizeof(int));
+    bool *mstSet = malloc((size_t)numNodes * sizeof(bool));
     for (int i = 0; i < numNodes; i++)
     {
         key[i] = INT_MAX;
@@ -282,9 +282,9 @@ void primMST(int **edges, int numEdges, int numNodes)
     }
 
     // Build weight matrix for printing
-    int **weightMatrix = malloc(numNodes * sizeof(int *));
+    int **weightMatrix = malloc((size_t)numNodes * sizeof(int *));
     for (int i = 0; i < numNodes; i++)
-        weightMatrix[i] = calloc(numNodes, sizeof(int));
+        weightMatrix[i] = malloc((size_t)numNodes* sizeof(int));
     for (int i = 0; i < numEdges; i++)
     {
         int u = edges[i][0], v = edges[i][1], w = edges[i][2];
