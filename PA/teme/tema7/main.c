@@ -14,17 +14,9 @@ struct node
 };
 typedef struct node Node;
 
-struct edge
-{
-    int src,dest;
-    int weight;
-};
-typedef struct edge Edge;
-
 struct graph
 {
     int vertices;
-    int *edges;
     int *values,*setValues; // values[i] is the value for node i and setValues[i]=0/1 whether a node's value has been set (for when the node is first created)
     int *visited;
     Node **adjacencyList;
@@ -44,6 +36,7 @@ Node *createNode(int data)
 Graph *createGraph()
 {
     Graph *graph = (Graph *)malloc(sizeof(Graph));
+    checkAllocation(graph);
     graph->vertices = 0;
     graph->adjacencyList = NULL;
     graph->visited = NULL;
@@ -77,6 +70,8 @@ void allocateNode(Graph *graph)
     }
     checkAllocation(graph->adjacencyList);
     checkAllocation(graph->visited);
+    checkAllocation(graph->values);
+    checkAllocation(graph->setValues);
     graph->adjacencyList[graph->vertices] = NULL;
     graph->visited[graph->vertices] = 0;
     graph->values[graph->vertices] = 0;
@@ -285,7 +280,7 @@ int hasLoopAlgorithm(Graph *graph, int parent, int current)
     return 0;
 }
 
-int hasLoop(Graph *graph, int parent, int current)
+int hasLoop(Graph *graph)
 {
     // Check all nodes until one that is not isolated is reached
     for(int i=0;i<graph->vertices;i++)
@@ -406,7 +401,7 @@ int main()
 
     puts("\nEXERCITIUL 3:\n");
     wipeVisitedList(graph);
-    printf("Exista cicluri in primul graf (da sau nu / 1 sau 0): %d.\n",hasLoop(graph,0,0));
+    printf("Exista cicluri in primul graf (da sau nu / 1 sau 0): %d.\n",hasLoop(graph));
     puts("\nEXERCITIUL 4:\n");
     printf("Cel mai lung drum de la cel mai mic nod la cel mai mare in primul graf este: %d.",findLongestValuePath(graph));
 
