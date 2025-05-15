@@ -1,0 +1,8 @@
+Atat Dijkstra, cat si Bellman-Ford sunt implementati pentru a gasi cel mai scurt
+drum in grafuri orientate cu muchii cu greutati / ponderate.
+Algoritmul lui Dijkstra este eficient si rapid, functionand doar pe grafuri cu ponderi pozitive,
+pentru ca presupune ca odata ce s-a gasit cel mai scurt drum catre un nod, acesta nu se va mai schimba.
+Bellman-Ford este capabil sa gestioneze grafuri si cu ponderi negative
+si sa detecteze cicluri de greutate negativa, moment in care se opreste, pentru ca asta ar genera lungimi
+de valoare infinit negativa.
+Pe input2.csv este folosit doar Bellman-Ford, pentru Dijkstra ar produce rezultate incorecte.

@@ -11,6 +11,7 @@
 #define INPUT_TEMA8 "tema8_input.csv"
 #define INPUT_1 "input1.csv" // only positive weights
 #define INPUT_2 "input2.csv" // both positive and negative weights (for bellman-ford)
+#define OUTPUT "difference.txt"
 
 // Explaining the weight attribute of node
 /*
@@ -39,6 +40,7 @@ typedef struct node Node;
 struct graph
 {
     int vertices;
+    char **names;            // pentru exercitiul bonus
     int *values, *setValues; // values[i] is the value for node i and setValues[i]=0/1 whether a node's value has been set (for when the node is first created)
     int *visited;
     Node **adjacencyList;
@@ -66,6 +68,8 @@ Graph *createGraph()
     graph->setValues = NULL;
     graph->front = NULL;
     graph->rear = NULL;
+
+    graph->names = NULL;
     return graph;
 }
 
@@ -86,8 +90,16 @@ void freeGraph(Graph *graph)
         }
     }
 
+    for (int i = 0; i < graph->vertices; i++)
+    {
+        free(graph->names[i]);
+    }
+
     // Free adjacency list array
     free(graph->adjacencyList);
+
+    // Free the names list
+    free(graph->names);
 
     // Free other dynamically allocated arrays
     free(graph->visited);
@@ -113,6 +125,7 @@ void allocateNode(Graph *graph)
         graph->visited = (int *)malloc(sizeof(int));
         graph->values = (int *)malloc(sizeof(int));
         graph->setValues = (int *)malloc(sizeof(int));
+        graph->names = (char **)malloc(sizeof(char *));
     }
     else
     {
@@ -120,11 +133,17 @@ void allocateNode(Graph *graph)
         graph->visited = (int *)realloc(graph->visited, (size_t)(graph->vertices + 1) * sizeof(int));
         graph->values = (int *)realloc(graph->values, (size_t)(graph->vertices + 1) * sizeof(int));
         graph->setValues = (int *)realloc(graph->setValues, (size_t)(graph->vertices + 1) * sizeof(int));
+        graph->names = (char **)realloc(graph->names, (size_t)(graph->vertices + 1) * sizeof(char *));
     }
     checkAllocation(graph->adjacencyList);
     checkAllocation(graph->visited);
     checkAllocation(graph->values);
     checkAllocation(graph->setValues);
+    checkAllocation(graph->names);
+
+    graph->names[graph->vertices] = (char *)malloc(100 * sizeof(char));
+    checkAllocation(graph->names[graph->vertices]);
+
     graph->adjacencyList[graph->vertices] = NULL;
     graph->visited[graph->vertices] = 0;
     graph->values[graph->vertices] = 0;
@@ -217,7 +236,7 @@ void printGraph(Graph *graph)
 
 void wipeVisitedList(Graph *graph)
 {
-    for (int i = 1; i <= graph->vertices; i++)
+    for (int i = 0; i <= graph->vertices - 1; i++)
     {
         graph->visited[i] = 0;
     }
@@ -264,45 +283,88 @@ void loadEdges(const char *filename, Graph **graph)
 
     free(s);
 }
-void printPath(int *prev, int dest)
+void printPathWithWeights(Graph *graph, int *prev, int dest)
 {
-    if (prev[dest] == -1) {
+    if (prev[dest] == -1)
+    {
         printf("%d", dest);
         return;
     }
-    printPath(prev, prev[dest]);
-    printf(" -> %d", dest);
+    printPathWithWeights(graph, prev, prev[dest]);
+
+    // Get weight from prev[dest] to dest
+    Node *neighbor = graph->adjacencyList[prev[dest]];
+    while (neighbor)
+    {
+        if (neighbor->index == dest)
+        {
+            printf(" -> %d(w=%d)", dest, neighbor->weight);
+            break;
+        }
+        neighbor = neighbor->next;
+    }
+}
+
+// PENTRU EXERCITIU BONUS
+void afiseazaCalea(Graph *graph, int *prev, int dest)
+{
+    if (prev[dest] == -1)
+    {
+        printf("%s", graph->names[dest]);
+        return;
+    }
+    afiseazaCalea(graph, prev, prev[dest]);
+
+    // Get weight from prev[dest] to dest
+    Node *neighbor = graph->adjacencyList[prev[dest]];
+    while (neighbor)
+    {
+        if (neighbor->index == dest)
+        {
+            printf(" -> %s(w=%d)", graph->names[dest], neighbor->weight);
+            break;
+        }
+        neighbor = neighbor->next;
+    }
 }
 
 int *dijkstraAlgorithm(Graph *graph, int start, int **prev_out)
 {
-    int *dist = malloc(sizeof(int) * graph->vertices);
-    int *visited = calloc(graph->vertices, sizeof(int));
-    int *prev = malloc(sizeof(int) * graph->vertices);
+    int *dist = malloc(sizeof(int) * (size_t)(graph->vertices));
+    int *visited = calloc((size_t)graph->vertices, sizeof(int));
+    int *prev = malloc(sizeof(int) * (size_t)graph->vertices); // stores the predecessor of node i on the shortest path
 
-    for (int i = 0; i < graph->vertices; i++) {
+    // set all distances to infinity, execpt for the starting vertex
+    for (int i = 0; i < graph->vertices; i++)
+    {
         dist[i] = INT_MAX;
         prev[i] = -1; // No predecessor initially
     }
     dist[start] = 0;
 
-    for (int count = 0; count < graph->vertices - 1; count++) {
+    for (int count = 0; count < graph->vertices - 1; count++)
+    {
         int min = INT_MAX, u = -1;
-        for (int v = 0; v < graph->vertices; v++) {
-            if (!visited[v] && dist[v] <= min) {
+        for (int v = 0; v < graph->vertices; v++)
+        {
+            if (!visited[v] && dist[v] <= min)
+            {
                 min = dist[v];
                 u = v;
             }
         }
 
-        if (u == -1) break;
+        if (u == -1)
+            break;
         visited[u] = 1;
 
         Node *neighbor = graph->adjacencyList[u];
-        while (neighbor) {
+        while (neighbor)
+        {
             int v = neighbor->index;
             int weight = neighbor->weight;
-            if (!visited[v] && dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+            if (!visited[v] && dist[u] != INT_MAX && dist[u] + weight < dist[v])
+            {
                 dist[v] = dist[u] + weight;
                 prev[v] = u;
             }
@@ -315,48 +377,43 @@ int *dijkstraAlgorithm(Graph *graph, int start, int **prev_out)
     return dist;
 }
 
-void printDijkstraPath(int *prev, int start, int destination) 
-{
-    Stack *pathStack = createStack(start);
-    int current = destination;
-
-    // Push the destination to the stack, then trace back
-    while (current != -1)
-    {
-        push(&pathStack, current);
-        current = prev[current];
-    }
-
-    // Print the path
-    printf("Path from %d to %d: ", start, destination);
-    while (!isEmpty(pathStack))
-    {
-        printf("%d ", stackPeek(pathStack));
-        pop(&pathStack);
-    }
-    printf("\n");
-
-    freeStack(&pathStack);
-}
-
 void dijkstra(Graph *graph, int start, int destination)
 {
     printf("Dijkstra -> ");
-    if (start >= graph->vertices || destination >= graph->vertices) {
+    if (start >= graph->vertices || destination >= graph->vertices)
+    {
         printf("Nodul start sau destinatie nu exista in graf.\n");
         return;
     }
 
     int *prev;
     int *dist = dijkstraAlgorithm(graph, start, &prev);
-    if (dist[destination] == INT_MAX) {
+    if (dist[destination] == INT_MAX)
+    {
         printf("Nu exista drum de la %d la %d.\n", start, destination);
-    } else {
+    }
+    else
+    {
         printf("Distanta de la %d la %d este %d.\n", start, destination, dist[destination]);
         printf("Drumul este: ");
-        printPath(prev, destination);
+        printPathWithWeights(graph, prev, destination);
         printf("\n");
     }
+
+    free(dist);
+    free(prev);
+}
+
+// PENTRU EXERCITIU BONUS
+void dijkstraBONUS(Graph *graph, int start, int destination)
+{
+
+    int *prev;
+    int *dist = dijkstraAlgorithm(graph, start, &prev);
+    printf("Distanta de la %s la %s este %d.\n", graph->names[start], graph->names[destination], dist[destination]);
+    printf("Drumul este: ");
+    afiseazaCalea(graph, prev, destination);
+    printf("\n");
 
     free(dist);
     free(prev);
@@ -365,22 +422,28 @@ void dijkstra(Graph *graph, int start, int destination)
 int *bellmanFordAlgorithm(Graph *graph, int start, int **prev_out)
 {
     int V = graph->vertices;
-    int *dist = malloc(sizeof(int) * V);
-    int *prev = malloc(sizeof(int) * V);
+    int *dist = malloc(sizeof(int) * (size_t)V);
+    int *prev = malloc(sizeof(int) * (size_t)V); // stores the predecessor of node i on the shortest path
 
-    for (int i = 0; i < V; i++) {
+    // set all distances to infinity, execpt for the starting vertex
+    for (int i = 0; i < V; i++)
+    {
         dist[i] = INT_MAX;
         prev[i] = -1;
     }
     dist[start] = 0;
 
-    for (int i = 1; i <= V - 1; i++) {
-        for (int u = 0; u < V; u++) {
+    for (int i = 1; i <= V - 1; i++)
+    {
+        for (int u = 0; u < V; u++)
+        {
             Node *neighbor = graph->adjacencyList[u];
-            while (neighbor) {
+            while (neighbor)
+            {
                 int v = neighbor->index;
                 int weight = neighbor->weight;
-                if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+                if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+                {
                     dist[v] = dist[u] + weight;
                     prev[v] = u;
                 }
@@ -389,14 +452,19 @@ int *bellmanFordAlgorithm(Graph *graph, int start, int **prev_out)
         }
     }
 
-    for (int u = 0; u < V; u++) {
+    // Check for negative cycle
+    for (int u = 0; u < V; u++)
+    {
         Node *neighbor = graph->adjacencyList[u];
-        while (neighbor) {
+        while (neighbor)
+        {
             int v = neighbor->index;
             int weight = neighbor->weight;
-            if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
+            if (dist[u] != INT_MAX && dist[u] + weight < dist[v])
+            {
                 printf("Graficul contine un ciclu negativ. Nu putem afisa cea mai scurta cale.\n");
-                free(dist); free(prev);
+                free(dist);
+                free(prev);
                 *prev_out = NULL;
                 return NULL;
             }
@@ -408,49 +476,29 @@ int *bellmanFordAlgorithm(Graph *graph, int start, int **prev_out)
     return dist;
 }
 
-
-void printBellmanFordPath(int *prev, int start, int destination)
-{
-    Queue *pathQueue = createQueue(start);
-    Queue *rear=getRear(pathQueue);
-    int current = destination;
-
-    // Push the destination to the queue, then trace back
-    while (current != -1)
-    {
-        enqueue(&pathQueue,&rear, current);
-        current = prev[current];
-    }
-
-    // Print the path
-    printf("Path from %d to %d: ", start, destination);
-    while (!isEmpty(pathQueue))
-    {
-        printf("%d ", dequeue(&pathQueue,&rear));
-    }
-    printf("\n");
-
-    freeQueue(&pathQueue,&rear);
-}
-
 void bellmanFord(Graph *graph, int start, int destination)
 {
     printf("Bellman Ford -> ");
-    if (start >= graph->vertices || destination >= graph->vertices) {
+    if (start >= graph->vertices || destination >= graph->vertices)
+    {
         printf("Nodul start sau destinatie nu exista in graf.\n");
         return;
     }
 
     int *prev;
     int *dist = bellmanFordAlgorithm(graph, start, &prev);
-    if (!dist) return;
+    if (!dist)
+        return;
 
-    if (dist[destination] == INT_MAX) {
+    if (dist[destination] == INT_MAX)
+    {
         printf("Nu exista drum de la %d la %d.\n", start, destination);
-    } else {
+    }
+    else
+    {
         printf("Distanta de la %d la %d este %d.\n", start, destination, dist[destination]);
         printf("Drumul este: ");
-        printPath(prev, destination);
+        printPathWithWeights(graph, prev, destination);
         printf("\n");
     }
 
@@ -458,6 +506,26 @@ void bellmanFord(Graph *graph, int start, int destination)
     free(prev);
 }
 
+void printDifference()
+{
+    FILE *outputFile = fopen(OUTPUT, "w");
+    if (!outputFile)
+    {
+        puts("Error creating the output file!");
+        exit(1);
+    }
+    fputs(
+        "Atat Dijkstra, cat si Bellman-Ford sunt implementati pentru a gasi cel mai scurt\n"
+        "drum in grafuri orientate cu muchii cu greutati / ponderate.\n"
+        "Algoritmul lui Dijkstra este eficient si rapid, functionand doar pe grafuri cu ponderi pozitive,\n"
+        "pentru ca presupune ca odata ce s-a gasit cel mai scurt drum catre un nod, acesta nu se va mai schimba.\n"
+        "Bellman-Ford este capabil sa gestioneze grafuri si cu ponderi negative\n"
+        "si sa detecteze cicluri de greutate negativa, moment in care se opreste, pentru ca asta ar genera lungimi\n"
+        "de valoare infinit negativa.\n"
+        "Pe input2.csv este folosit doar Bellman-Ford, pentru Dijkstra ar produce rezultate incorecte.",
+        outputFile);
+    fclose(outputFile);
+}
 
 int main()
 {
@@ -476,5 +544,52 @@ int main()
     printf("\nRulam Bellman Ford pe graful de la input2.csv:\n");
     loadEdges(INPUT_2, &graph);
     bellmanFord(graph, 15, 16);
+
+    printDifference();
+    free(graph);
+
+    // EXERCITIU EXTRA - 2p
+    puts("\n\nEXERCITIU EXTRA\n");
+
+#define BUCURESTI 0
+#define BRASOV 1
+#define CONSTANTA 2
+#define CRAIOVA 3
+#define SIBIU 4
+#define TIMISOARA 5
+#define CLUJ_NAPOCA 6
+#define IASI 7
+
+    Graph *harta = createGraph();
+
+    addTwoEdges(harta, BUCURESTI, BRASOV, 170);    // bucuresti-brasov
+    addTwoEdges(harta, BUCURESTI, CONSTANTA, 250); // bucuresti-constanta
+    addTwoEdges(harta, BUCURESTI, CRAIOVA, 235);   // bucuresti-craiova
+    addTwoEdges(harta, BUCURESTI, TIMISOARA, 550); // bucuresti timisoara
+    addTwoEdges(harta, BUCURESTI, SIBIU, 300);     // bucuresti-sibiu
+    addTwoEdges(harta, CONSTANTA, IASI, 400);      // constanta-iasi
+    addTwoEdges(harta, BRASOV, IASI, 300);         // brasov-iasi
+    addTwoEdges(harta, BRASOV, SIBIU, 120);        // brasov-sibiu
+    addTwoEdges(harta, SIBIU, TIMISOARA, 271);     // sibiu-timisoara
+    addTwoEdges(harta, SIBIU, CLUJ_NAPOCA, 176);   // sibiu-cluj-napoca
+    addTwoEdges(harta, IASI, CLUJ_NAPOCA, 480);    // iasi-cluj-napoca
+    addTwoEdges(harta, CRAIOVA, TIMISOARA, 336);   // craiova-timisoara
+    addTwoEdges(harta, SIBIU, IASI, 460);          // sibiu-iasi
+
+    strcpy(harta->names[0], "Bucuresti");
+    strcpy(harta->names[1], "Brasov");
+    strcpy(harta->names[2], "Constanta");
+    strcpy(harta->names[3], "Craiova");
+    strcpy(harta->names[4], "Sibiu");
+    strcpy(harta->names[5], "Timisoara");
+    strcpy(harta->names[6], "Cluj-Napoca");
+    strcpy(harta->names[7], "Iasi");
+
+    dijkstraBONUS(harta, BUCURESTI, CONSTANTA);
+    dijkstraBONUS(harta, CRAIOVA, IASI);
+    dijkstraBONUS(harta, CONSTANTA, CLUJ_NAPOCA);
+
+    free(harta);
+
     return 0;
 }
