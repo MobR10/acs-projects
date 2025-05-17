@@ -568,6 +568,7 @@ int main()
     addTwoEdges(harta, BUCURESTI, TIMISOARA, 550); // bucuresti timisoara
     addTwoEdges(harta, BUCURESTI, SIBIU, 300);     // bucuresti-sibiu
     addTwoEdges(harta, CONSTANTA, IASI, 400);      // constanta-iasi
+    addTwoEdges(harta, BRASOV, CONSTANTA, 200);    // brasov-constanta
     addTwoEdges(harta, BRASOV, IASI, 300);         // brasov-iasi
     addTwoEdges(harta, BRASOV, SIBIU, 120);        // brasov-sibiu
     addTwoEdges(harta, SIBIU, TIMISOARA, 271);     // sibiu-timisoara
@@ -585,7 +586,7 @@ int main()
     strcpy(harta->names[6], "Cluj-Napoca");
     strcpy(harta->names[7], "Iasi");
 
-    dijkstraBONUS(harta, BUCURESTI, CONSTANTA);
+    dijkstraBONUS(harta, TIMISOARA, CONSTANTA);
     dijkstraBONUS(harta, CRAIOVA, IASI);
     dijkstraBONUS(harta, CONSTANTA, CLUJ_NAPOCA);
 
