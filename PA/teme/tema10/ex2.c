@@ -36,7 +36,7 @@ int main() {
     int weights[ITEMS_NUMBER] = {1,  1,  2,  12,  4};
 
     int maxValue = knapsack(weights, values);
-    printf("Maximum value that can be carried: %d\n", maxValue);
+    printf("Valoarea maxima care poate fi carata este: %d\n", maxValue);
 
     return 0;
 }
