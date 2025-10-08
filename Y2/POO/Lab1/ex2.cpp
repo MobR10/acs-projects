@@ -129,13 +129,39 @@ public:
         cout << endl;
     }
 };
-
+void copyArray(int source[], int destination[], int n)
+{
+    for (int i = 0; i < n; i++)
+        destination[i] = source[i];
+}
 int main()
 {
-    int arr[5] = {40, 8, 11, 2, 99};
+    int arr[5] = {40, 8, 11, 2, 99}, arrayCopy[5];
     int n = 5;
+    
     Sorter sorting;
+
+    cout << "Original array: ";
+    sorting.printArray(arr, n);
+
+    cout << "Bubble Sort: ";
+    copyArray(arr, arrayCopy, n);
     sorting.bubbleSort(arr, n);
+    sorting.printArray(arr, n);
+    
+    cout << "Insertion Sort: ";
+    copyArray(arrayCopy, arr, n);
+    sorting.insertionSort(arr, n);
+    sorting.printArray(arr, n);
+
+    cout << "Merge Sort: ";
+    copyArray(arrayCopy, arr, n);
+    sorting.mergeSort(arr, 0, n - 1);
+    sorting.printArray(arr, n);
+
+    cout << "Quick Sort: ";
+    copyArray(arrayCopy, arr, n);
+    sorting.quickSort(arr, 0, n - 1);
     sorting.printArray(arr, n);
 
     return 0;
