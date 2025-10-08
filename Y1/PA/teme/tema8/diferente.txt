@@ -1,0 +1,21 @@
+                       Asemanari:
+1. Amandoi algoritmii determina arborele minim de acoperire;
+2. Funcționează doar pe grafuri ponderate, conexe si neorientate;
+3. Complexitatea lor poate fi similară în funcție de implementare (O(ElogE) sau O(E+VlogV)).
+
+                       Diferențe:
+Criteriu                   Kruskal                                     Prim
+Metodologie            Abordare pe muchii.                          Abordare pe noduri.
+Inițializare           Sortează toate muchiile.                     Pornește de la un nod sursă.
+Performanță            Mai rapid în grafuri sparte(sparse).         Mai eficient în grafuri dense.
+
+                       Avantaje:
+Kruskal:
+-  Ideal pentru grafuri cu multe noduri și puține muchii(sparse).
+-  Ușor de implementat folosind sortare și Union-Find.
+-  Flexibil: poate fi adaptat și pentru grafuri cu componente conexe multiple.
+
+Prim:
+-  Mai eficient în grafuri dense, mai ales cu implementare pe heap.
+-  Construiește arborele incremental, util pentru aplicații online.
+-  Poate fi mai intuitiv pentru aplicații geografice (hărți, rețele).

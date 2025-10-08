@@ -2,3 +2,4 @@
 **/*.exe
 selected_code*
 build
+*.jar
