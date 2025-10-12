@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <title>Contact</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.jpg">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.jpg">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.jpg">
+    <link rel="manifest" href="images/site.webmanifest">
+    
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/buttons.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anta&family=Comic+Relief:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <br>
+        <div id="headerLogo">
+         <span id="headerLetter" >
+            R
+        </span>
+
+        <span id="headerLabel">
+            My Site | Contacteaza-ma
+        </span>   
+        </div>
+        
+        <div id="butoane">
+            <a href="index.html">
+                <button class="navButton">Acasa</button>
+            </a>
+            <a href="cv.html">
+                <button class="navButton">Curriculum Vitae</button>
+            </a>
+    </header>
+    <main>
+        <form action="mailto:anghelraffaele@gmail.com?Subject=subiect&Body=nimic" method="POST"
+            enctype="multipart/form-data">
+
+            <div class="formElem">
+                <label for="subiect">Subiect:</label>
+            <input type="text" id="subiect" required><br>
+            </div>
+            
+
+            <div class="formElem">
+                <label for="cuprins">Cuprins:</label>
+            <textarea id="cuprins" ros="50" cols="50" required></textarea><br>
+            </div>
+            
+
+
+            <input type="submit" value="Email Me" id="submitButton">
+        </form>
+    </main>
+    <footer>
+        <hr>
+        Autor: Anghel Raffaele<br>
+        &copy; Copyright Reserved<br>
+    </footer>
+</body>
+
+</html>

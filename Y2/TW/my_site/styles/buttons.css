@@ -1,0 +1,35 @@
+.navButton{
+    font-family: "Anta";
+    font-size: 2em;
+    font-weight:bold;
+    background: black;
+    color: rgb(119, 0, 0);
+    border-radius: 10px;
+    border-color: transparent;
+    margin: 10px
+
+
+}
+
+.normalButton{
+    font-family: "Comic Relief";
+    font-size: 1em;
+    font-weight:bold;
+    background-color: rgb(120, 16, 16);
+    color: black;
+
+}
+#submitButton{
+    font-family: "Comic Relief";
+    font-size: 25px;
+    font-weight:bold;
+    background-color: aliceblue;
+    color: black;
+    height: 2em;
+}
+a{
+    border-radius: 100;
+    width: 1px;
+    height: 5px;
+    align-self: auto;
+}

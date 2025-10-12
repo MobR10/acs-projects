@@ -1,0 +1,82 @@
+h1 {
+    font-family: "Comic Relief";
+    font-size: 2em;
+    font-weight: bold;
+}
+
+header {
+    background-color: rgb(119, 0, 0);
+    border-radius: 10px;
+}
+
+.headerLogo {
+    margin-top: 10px;
+    margin: auto;
+}
+
+#headerLetter {
+    font-family: "Anta";
+    font-size: 5em;
+    background-color: black;
+    color: rgb(119, 0, 0);
+    border-radius: 10px;
+
+    display: inline-flex;
+    /* makes centering easy */
+    align-items: center;
+    /* vertical centering */
+    justify-content: center;
+    /* horizontal centering */
+
+    width: 1em;
+    height: 1em;
+    margin-left: 20px;
+}
+
+#headerLabel {
+    font-family: "Anta";
+    font-size: 3em;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+footer {
+    font-family: "Comic Relief";
+    font-size: 1em;
+    font-weight: normal;
+}
+
+form {
+    background-color: salmon;
+}
+
+label {
+    font-family: "Comic Relief";
+    font-size: 2em;
+    font-weight: bold;
+}
+
+input {
+    font-family: "Comic Relief";
+    font-size: 2em;
+    font-weight: normal;
+}
+
+textarea {
+    font-family: "Comic Relief";
+    font-size: 2em;
+    font-weight: normal;
+    ;
+    align-items: center;
+}
+
+p {
+    font-family: "Comic Relief";
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.formElem {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
