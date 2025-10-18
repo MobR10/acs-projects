@@ -37,41 +37,46 @@
 
   <body>
     <header>
-        <span class="headerText" id="headerLetter"> R </span>
+      <span class="headerText" id="headerLetter"> R </span>
 
-        <span class="headerText" id="headerLabel"> My Site | Contacteaza-ma </span>
+      <span class="headerText" id="headerLabel">
+        My Site | Contacteaza-ma
+      </span>
     </header>
+    <nav>
+      <a href="index.html">
+        <button>Acasa</button>
+      </a>
+      <a href="cv.html">
+        <button>Curriculum Vitae</button>
+      </a>
+    </nav>
     <main>
-      <nav>
-        <a href="index.html">
-          <button>Acasa</button>
-        </a>
-        <a href="cv.html">
-          <button>Curriculum Vitae</button>
-        </a>
-      </nav>
       <form
-        action="mailto:anghelraffaele@gmail.com?Subject=subiect&Body=nimic"
+        id="contactForm"
+        action="mailto:anghelraffaele10@gmail.com?Subject=Subiect&Body=Nimic"
         method="POST"
         enctype="multipart/form-data"
       >
         <div class="formElem">
-          <label for="subiect">Subiect:</label>
-          <input type="text" id="subiect" required /><br />
+          <label for="mailSubject">Subiect:</label>
+          <input type="text" id="mailSubject" required /><br />
         </div>
 
         <div class="formElem">
-          <label for="cuprins">Cuprins:</label>
-          <textarea id="cuprins" ros="50" cols="50" required></textarea><br />
+          <label for="mailBody">Cuprins:</label>
+          <textarea id="mailBody" rows="10"></textarea><br />
         </div>
 
-        <input type="submit" value="Email Me" id="submitButton" />
+        <input type="submit" value="Send Email" id="submitButton" />
       </form>
     </main>
     <footer>
       <hr />
-      Autor: Anghel Raffaele<br />
+      <div id="footerText">
+        Autor: Anghel Raffaele<br />
       &copy; Copyright Reserved<br />
+      </div>
     </footer>
   </body>
 </html>

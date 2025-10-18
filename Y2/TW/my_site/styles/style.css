@@ -3,30 +3,41 @@
 }
 
 header {
-  background-color: rgb(119, 0, 0);
+  background-color: rgb(15, 14, 14);
   border-radius: 10px;
   padding: 20px;
   margin: 10px;
 }
 
+nav {
+  clear: both;
+}
+
 .headerText {
+  color: aliceblue;
   font-family: "Anta";
-  font-size: 2em;
+  font-size: 3em;
   display: inline-flex;
+  margin-left: 10px;
+  text-wrap: wrap;
 }
 
 #headerLetter {
-  background-color: black;
-  color: rgb(119, 0, 0);
+
+  background-color: rgb(73, 3, 3);
+  color: aliceblue;
+  text-shadow: 2px 2px rgb(0, 0, 0);
   border-radius: 10px;
   padding-left: 10px;
   padding-right: 10px;
 }
 
 #europasslogo {
-  height: 250px;
-  float: right;
-  padding: 10px;
+  height: 10em;
+}
+
+body {
+  background-color: rgb(73, 3, 3);
 }
 
 aside {
@@ -47,36 +58,99 @@ footer {
   font-weight: normal;
 }
 
-form {
-  background-color: salmon;
+pre {
+  font-family: "Comic Relief";
+  font-size: 1em;
+  text-wrap-mode: wrap;
+  color: aliceblue;
 }
 
 label {
+  color: aliceblue;
   font-family: "Comic Relief";
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: bold;
+  display: flex;
 }
 
 input {
+  display: inline-flex;
   font-family: "Comic Relief";
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: normal;
+  border-radius: 10px;
+  border: transparent;
 }
 
 textarea {
   font-family: "Comic Relief";
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: normal;
   align-items: center;
+  border-radius: 10px;
+
+  overflow: auto;
 }
 
 p {
+
+  font-family: "Comic Relief";
+  font-size: 1em;
+  font-weight: bold;
+  color: aliceblue;
+  text-shadow: 2px 2px rgb(0, 0, 0);
+}
+
+#contactForm {
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.formElem {
+  margin-bottom: 20px;
+  text-shadow: 2px 2px rgb(0, 0, 0);
+}
+
+#mailSubject {
+  width: 40%;
+}
+#mailBody {
+  width: 50%;
+}
+
+.headerItem {
+  color: aliceblue;
+  text-shadow: 2px 2px rgb(0, 0, 0);
   font-family: "Comic Relief";
   font-size: 1.5em;
   font-weight: bold;
 }
 
-.formElem {
-  margin-top: 10px;
-  margin-bottom: 10px;
+.item {
+  color: rgb(79, 155, 255);
+  text-shadow: 2px 2px rgb(0, 0, 0);
+  font-family: "Comic Relief";
+  font-weight: bold;
+}
+
+.small {
+  color: rgb(249, 246, 246);
+  text-shadow: 2px 2px rgb(0, 0, 0);
+  font-family: "Comic Relief";
+  font-weight: normal;
+}
+#footerText{
+  color: aliceblue;
+  text-shadow: 2px 2px rgb(0, 0, 0);
+}
+
+.cv{
+  width: 50%;     
+  margin-left: 0;
+  margin-right: auto;
+}
+@media screen and (max-width: 600px) {
+  #contactForm #mailBody {
+    width: 100%;
+  }
 }
