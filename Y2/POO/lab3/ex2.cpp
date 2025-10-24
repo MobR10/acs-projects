@@ -69,8 +69,11 @@ class Student
     Random generator;
 
 public:
-    Student(int facultyFoundedYear = 1818, string facultyName="Automatica si Calculatoare"){
+    Student(string lastName="N/A", string firstName="N/A", string facultyName="Automatica si Calculatoare",int facultyFoundedYear = 1818){
          
+        this->lastName = lastName;
+        this->firstName = firstName;
+
         Student::numberOfStudents ++;
         this->id = Student::numberOfStudents;
 
@@ -199,6 +202,8 @@ public:
 
     void displayAttributes(){
         cout<<"Student"<<this->id<<":\n";
+        cout<<"Nume: "<<this->lastName<<endl;
+        cout<<"Prenume: "<<this->firstName<<endl;
         cout<<"CNP: "<<this->CNP<<endl;
         cout<<"Sex: "<<this->getGender()<<endl;
         cout<<"Varsta: "<< this->getAge()<<endl;
