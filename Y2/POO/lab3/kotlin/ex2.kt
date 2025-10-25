@@ -19,16 +19,49 @@ but for individuals born between 2000 and 2099, the sex digit is 5 for male and 
 3. Generate a random month
 4. Based on the month, determine the maximum number of days in that month
 5. Generate a random day in that month
-6. Randomly generate the rest of the 6 digits of the CNP
-NOTE: in Romania, the 2 digits following the day of birth are dependent on the county and then the last digit is determined by
-a sequence of digits and the birth date. Basically, this algorithm doesn't copy the real deal,
-therefore it is possible, though very unlikely, to generate 2 identical CNPs. 
+6. Choose a random county from the list
+7. Generate the next 3 digits randomly
+8. Determine the control digit
+NOTE: in Romania, the 2 digits following the day of birth are dependent on the county and then the last digit is determined based on the first 12
 ====================================================
 */
 
 import kotlin.random.Random
 import java.time.Year
 import kotlin.math.abs
+
+fun calculeazaCifraDeControlCharArray(cnpPrimele12: CharArray): Int {
+    val constantaK = "279146358279"
+    val LUNGIME = 12
+
+    if (cnpPrimele12.size != LUNGIME) {
+        return -1 
+    }
+
+    var suma: Long = 0 
+    
+    for (i in 0 until LUNGIME) {
+        val cnp_cifra_char = cnpPrimele12[i]
+        
+        val cnp_cifra = cnp_cifra_char.digitToIntOrNull() // Corecție: Folosirea metodei Kotlin sigure
+        
+        if (cnp_cifra == null) { // Verifică dacă conversia a eșuat
+            return -1 // Caracter invalid în input, returnam eroare
+        }
+        
+        val k_cifra = constantaK[i].digitToInt()
+        
+        suma += cnp_cifra * k_cifra
+    }
+    
+    val rest = (suma % 11).toInt()
+    
+    // Regula de control: Daca restul e 10, C = 1. Altfel, C = rest.
+    return when {
+        rest < 10 -> rest
+        else -> 1 
+    }
+}
 
 class Student(private var lastName: String = "N/A",
     private var firstName: String = "N/A",
@@ -37,10 +70,20 @@ class Student(private var lastName: String = "N/A",
 
         companion object{
             private var numberOfStudents: Int = 0
-
             fun getNumberOfStudents(): Int{
                 return numberOfStudents
             }
+            val COUNTY_CODES: List<Int> = listOf(
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+            31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40,
+            41, 42, 43, 44, 45, 46,
+            51,
+            52,
+            70
+        )
         }
         
         private val id: Int = ++numberOfStudents
@@ -96,17 +139,23 @@ class Student(private var lastName: String = "N/A",
         charCNP[5] = (dd / 10).digitToChar() 
         charCNP[6] = (dd % 10).digitToChar()
 
-        // generare random a ultimelor 6 cife
-        // nu e algoritmul real si nici nu ia in considerare situatiile putin probabile in care restul cnp-ului este identic,
-        // adica cand sexul si data nasterii coincid
-        charCNP[7] = Random.nextInt(0,9+1).digitToChar()
-        charCNP[8] = Random.nextInt(0,9+1).digitToChar()
+        val county = Student.COUNTY_CODES[Random.nextInt(0,48+1)]
+        
+        charCNP[7] = (county/10).digitToChar()
+        charCNP[8] = (county%10).digitToChar()
+
         charCNP[9] = Random.nextInt(0,9+1).digitToChar()
         charCNP[10] = Random.nextInt(0,9+1).digitToChar()   
         charCNP[11] = Random.nextInt(0,9+1).digitToChar() 
-        charCNP[12] = Random.nextInt(0,9+1).digitToChar()
 
-            this.CNP = charCNP.joinToString(separator="")
+        val charCNP12 = charArrayOf(
+            charCNP[0], charCNP[1], charCNP[2], charCNP[3], charCNP[4], charCNP[5],
+            charCNP[6], charCNP[7], charCNP[8], charCNP[9], charCNP[10], charCNP[11]
+        ) 
+        
+        charCNP[12] = calculeazaCifraDeControlCharArray(charCNP12).digitToChar()
+        
+        this.CNP = charCNP.joinToString(separator="")
         }
         // --- Getters and Setters for Primary Constructor Properties ---
 

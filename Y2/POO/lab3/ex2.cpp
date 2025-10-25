@@ -19,12 +19,13 @@ but for individuals born between 2000 and 2099, the sex digit is 5 for male and 
 3. Generate a random month
 4. Based on the month, determine the maximum number of days in that month
 5. Generate a random day in that month
-6. Randomly generate the rest of the 6 digits of the CNP
-NOTE: in Romania, the 2 digits following the day of birth are dependent on the county and then the last digit is determined by
-a sequence of digits and the birth date. Basically, this algorithm doesn't copy the real deal,
-therefore it is possible, though very unlikely, to generate 2 identical CNPs.
+6. Choose a random county from the list
+7. Generate the next 3 digits randomly
+8. Determine the control digit
+NOTE: in Romania, the 2 digits following the day of birth are dependent on the county and then the last digit is determined based on the first 12
 ====================================================
 */
+
 #include <iostream>
 #include <string>
 #include <random>
@@ -73,12 +74,58 @@ public:
         }
 
         // Generate a random index in the range [0, size - 1].
-        std::uniform_int_distribution<size_t> distribution(0, size - 1);
+        uniform_int_distribution<size_t> distribution(0, size - 1);
         size_t randomIndex = distribution(generator);
 
         return data[randomIndex];
     }
 };
+
+int calculeazaCifraDeControl_char(const char *cnp_primele_12)
+    {
+        // 1. Constanta de control K (ca sir de caractere)
+        const char *constanta_K = "279146358279";
+        const int LUNGIME = 12;
+
+        // Verifică dacă șirul primit are exact 12 caractere
+        if (cnp_primele_12 == nullptr || strlen(cnp_primele_12) != LUNGIME)
+        {
+            return -1; // Semnalează o eroare
+        }
+
+        long long suma = 0;
+
+        // 2. Parcurge și înmulțește fiecare cifră
+        for (int i = 0; i < LUNGIME; ++i)
+        {
+            // Conversia caracterului cifră ('0' la '9') în valoarea sa întreagă (0 la 9)
+            int cnp_cifra = cnp_primele_12[i] - '0';
+            int k_cifra = constanta_K[i] - '0';
+
+            // Verifică dacă input-ul CNP conține doar cifre
+            if (cnp_cifra < 0 || cnp_cifra > 9)
+            {
+                return -1; // Caracter invalid în CNP
+            }
+
+            // 3. Adună rezultatul înmulțirii la suma totală
+            suma += (long long)cnp_cifra * k_cifra;
+        }
+
+        // 4. Împarte la 11 și ia restul
+        int rest = suma % 11;
+
+        // 5. Determină cifra de control finală (C)
+        if (rest < 10)
+        {
+            return rest;
+        }
+        else
+        {
+            // Cazul în care restul este 10, Cifra de control este 1
+            return 1;
+        }
+    }
 class Student
 {
     static int numberOfStudents;
@@ -87,6 +134,21 @@ class Student
     char CNP[14];
     int birthYear, facultyFoundedYear;
     Random generator;
+    int counties[49] = {
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,          // 01-10: Alba - Buzău
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, // 11-20: Caraș-Severin - Hunedoara
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, // 21-30: Ialomița - Satu Mare
+        31, 32, 33, 34, 35, 36, 37, 38, 39,     // 31-39: Sălaj - Vrancea
+
+        40,                     // București (vechi)
+        41, 42, 43, 44, 45, 46, // Sectoarele București (1-6)
+
+        51, // Călărași
+        52, // Giurgiu
+
+        70 // Cod Unic (pentru CNP-urile noi)
+
+    };
 
 public:
     Student(string lastName = "N/A", string firstName = "N/A", string facultyName = "Automatica si Calculatoare", int facultyFoundedYear = 1818)
@@ -143,15 +205,20 @@ public:
         CNP[5] = (dd / 10) + '0';
         CNP[6] = (dd % 10) + '0';
 
-        // generare random a ultimelor 6 cife
-        // nu e algoritmul real si nici nu ia in considerare situatiile putin probabile in care restul cnp-ului este identic,
-        // adica cand sexul si data nasterii coincid
-        CNP[7] = generator.nextInt(0, 9) + '0';
-        CNP[8] = generator.nextInt(0, 9) + '0';
+        // choose random county
+        int jj = generator.nextIntFromArray(this->counties, 49);
+        CNP[7] = jj / 10 + '0';
+        CNP[8] = jj % 10 + '0';
+
+        // next 3 digits are random
         CNP[9] = generator.nextInt(0, 9) + '0';
         CNP[10] = generator.nextInt(0, 9) + '0';
         CNP[11] = generator.nextInt(0, 9) + '0';
-        CNP[12] = generator.nextInt(0, 9) + '0';
+
+        // control digit
+        char first12[13]="";
+        strncpy(first12,CNP,12);
+        CNP[12] = calculeazaCifraDeControl_char(first12) + '0';
 
         CNP[13] = '\0';
     }
@@ -267,6 +334,7 @@ public:
             return 0;
         }
     }
+
 };
 
 int Student::numberOfStudents = 0;
