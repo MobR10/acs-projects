@@ -18,6 +18,7 @@
     Se va apela direct pe clasă: ContBancar::seteazaRataDobanda(...). Adaugă o metodă non-statică numită aplicaDobanda().
     Aceasta calculează dobânda pentru contul curent (sold * rataDobanda) și o adaugă la sold.
 */
+
 #include <iostream>
 #include <string>
 
@@ -43,18 +44,18 @@ class ContBancar{
         return this->sold;
     }
 
-    void depunereSuma(double suma){
+    void depune(double suma){
         (this->sold) += suma;
-        cout<<"A fost depusa suma de "<<this->sold<<" in contul lui "<<this->titularCont<<endl;
+        cout<<"Succes depunere suma de "<<suma<<" in contul lui "<<this->titularCont<<endl;
     }
 
-    void retrageSuma(double suma){
+    void retrage(double suma){
         if(this->sold >= suma)
         {
             (this->sold) -= suma;
-            cout<<"A fost retrasa suma de "<<suma<<" din contul lui "<<this->titularCont<<endl;
+            cout<<"Succes retragere suma de "<<suma<<" din contul lui "<<this->titularCont<<endl;
         }
-        else cout<<"Eroare la retragere suma. Sold < suma de retras"<<endl;
+        else cout<<"Eroare retragere suma de "<< suma <<" din contul lui "<< this->titularCont<<". Sold < suma de retras"<<endl;
     }
 
     static void seteazaRataDobanda(double rataNoua){
@@ -64,26 +65,26 @@ class ContBancar{
 
     void aplicaDobanda(){
         (this->sold) += this->sold * ContBancar::rataDobanda;
-        cout<<"Rata dobanda a fost aplicata la contul lui "<<this->titularCont<<endl;
+        cout<<"S-a aplicat rata dobanda la soldul contului de titular"<<this->titularCont<<endl;
     }
 };
 
 double ContBancar::rataDobanda = 0.02;
 
 int main(){
-    ContBancar cont1("Tipatescu",21.4), cont2("Zoe Trahanache",68.99);
+    ContBancar cont1("Stefan Tipatescu",21.4), cont2("Zoe Trahanache",68.99);
 
     cout<<"Cont1:"<<endl<<"Titular cont: "<<cont1.getTitular()<<endl<<"Sold initial: "<<cont1.getSold()<<endl;
     cout<<"Cont2:"<<endl<<"Titular cont: "<<cont2.getTitular()<<endl<<"Sold initial: "<<cont2.getSold()<<endl;
 
     cout<<endl;
 
-    cont1.depunereSuma(20);
+    cont1.depune(20);
     cout<<"Cont1 sold: "<<cont1.getSold()<<endl;
 
-    cont1.retrageSuma(50.23);
+    cont1.retrage(50.23);
 
-    cont2.retrageSuma(30.89);
+    cont2.retrage(30.89);
     cout<<"Cont2 sold: "<<cont2.getSold()<<endl;
 
     cout<<endl;

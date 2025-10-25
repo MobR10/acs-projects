@@ -7,6 +7,24 @@
 // Creați o metodă care să întoarcă diferența de ani dintre anul înființării facultății și data nașterii studentului. 0.5. p
 // Utilizați this Pointer. 0.5p  Testați codul creând mai mulți studenți.
 
+/*
+=====================================================
+            CNP ALGORITHM EXPLANATION:
+I have used random library to choose pseudo-random generated numbers for ALL the digits of the CNP
+Steps:
+1. Choose random birth year such that the person is at least 19 years old but not older than 110 years, using ctime library
+to get the current year.
+2. Determine the sex based on the birth year range, because for individuals born in 1900-1999, the sex is 1 for male and 2 for female,
+but for individuals born between 2000 and 2099, the sex digit is 5 for male and 6 for female.
+3. Generate a random month
+4. Based on the month, determine the maximum number of days in that month
+5. Generate a random day in that month
+6. Randomly generate the rest of the 6 digits of the CNP
+NOTE: in Romania, the 2 digits following the day of birth are dependent on the county and then the last digit is determined by
+a sequence of digits and the birth date. Basically, this algorithm doesn't copy the real deal,
+therefore it is possible, though very unlikely, to generate 2 identical CNPs.
+====================================================
+*/
 #include <iostream>
 #include <string>
 #include <random>
@@ -38,24 +56,26 @@ public:
     int nextInt(int min, int max)
     {
         if (min > max)
-            {
-                cerr<<"MIN value is larger than max";
-                return -1;
-            }
+        {
+            cerr << "MIN value is larger than max";
+            return -1;
+        }
         uniform_int_distribution<> distribution(min, max);
         return distribution(generator);
     }
 
-    int nextIntFromArray(const int* data, size_t size) {
-        if (size == 0) {
+    int nextIntFromArray(const int *data, size_t size)
+    {
+        if (size == 0)
+        {
             cerr << "RUNTIME ERROR: Cannot select from an array with size 0." << endl;
             return 0;
         }
-        
+
         // Generate a random index in the range [0, size - 1].
         std::uniform_int_distribution<size_t> distribution(0, size - 1);
         size_t randomIndex = distribution(generator);
-        
+
         return data[randomIndex];
     }
 };
@@ -69,179 +89,194 @@ class Student
     Random generator;
 
 public:
-    Student(string lastName="N/A", string firstName="N/A", string facultyName="Automatica si Calculatoare",int facultyFoundedYear = 1818){
-         
+    Student(string lastName = "N/A", string firstName = "N/A", string facultyName = "Automatica si Calculatoare", int facultyFoundedYear = 1818)
+    {
+
         this->lastName = lastName;
         this->firstName = firstName;
 
-        Student::numberOfStudents ++;
+        Student::numberOfStudents++;
         this->id = Student::numberOfStudents;
 
         this->facultyFoundedYear = facultyFoundedYear;
         this->facultyName = facultyName;
 
-        int fullYear = generator.nextInt(Student::getCurrentYear()-110, Student::getCurrentYear()-19); 
+        int fullYear = generator.nextInt(Student::getCurrentYear() - 110, Student::getCurrentYear() - 19);
 
         this->birthYear = fullYear;
 
-        CNP[0] = (fullYear < 2000) ? (generator.nextInt(1, 2) + '0') : (generator.nextInt(5,6) + '0');
+        // generate random sex
+        CNP[0] = (fullYear < 2000) ? (generator.nextInt(1, 2) + '0') : (generator.nextInt(5, 6) + '0');
         int yy = fullYear % 100;
 
-        CNP[1] = (yy / 10) + '0'; 
-        CNP[2] = (yy % 10) + '0'; 
+        CNP[1] = (yy / 10) + '0';
+        CNP[2] = (yy % 10) + '0';
 
         int mm = generator.nextInt(1, 12);
 
-        CNP[3] = (mm / 10) + '0'; 
-        CNP[4] = (mm % 10) + '0'; 
+        CNP[3] = (mm / 10) + '0';
+        CNP[4] = (mm % 10) + '0';
 
         int maxDays;
-        
-        if( mm % 2 == 0)
+
+        if (mm % 2 == 0)
         {
-            if(mm == 8) // august e exceptie de luna para cu 31 de zile
-                {
-                    maxDays=31;
-                }
-            else if (mm == 2){
-                if((fullYear % 4 == 0) && (fullYear % 100 != 0 || fullYear % 400 == 0)) // daca e an bisect
-                    maxDays = 29;
-                else maxDays = 28;
+            if (mm == 8) // august e exceptie de luna para cu 31 de zile
+            {
+                maxDays = 31;
             }
-            else maxDays = 30;
+            else if (mm == 2)
+            {
+                if ((fullYear % 4 == 0) && (fullYear % 100 != 0 || fullYear % 400 == 0)) // daca e an bisect
+                    maxDays = 29;
+                else
+                    maxDays = 28;
+            }
+            else
+                maxDays = 30;
         }
-        else maxDays = 31;
+        else
+            maxDays = 31;
 
         int dd = generator.nextInt(1, maxDays);
 
-        CNP[5] = (dd / 10) + '0'; 
-        CNP[6] = (dd % 10) + '0'; 
+        CNP[5] = (dd / 10) + '0';
+        CNP[6] = (dd % 10) + '0';
 
         // generare random a ultimelor 6 cife
         // nu e algoritmul real si nici nu ia in considerare situatiile putin probabile in care restul cnp-ului este identic,
         // adica cand sexul si data nasterii coincid
-        CNP[7] = generator.nextInt(0,9) + '0';
-        CNP[8] = generator.nextInt(0,9) + '0';
-        CNP[9] = generator.nextInt(0,9) + '0';
-        CNP[10] = generator.nextInt(0,9) + '0';  
-        CNP[11] = generator.nextInt(0,9) + '0';
-        CNP[12] = generator.nextInt(0,9) + '0';
+        CNP[7] = generator.nextInt(0, 9) + '0';
+        CNP[8] = generator.nextInt(0, 9) + '0';
+        CNP[9] = generator.nextInt(0, 9) + '0';
+        CNP[10] = generator.nextInt(0, 9) + '0';
+        CNP[11] = generator.nextInt(0, 9) + '0';
+        CNP[12] = generator.nextInt(0, 9) + '0';
 
         CNP[13] = '\0';
     }
 
-    string getGender()
+    string getGender() const
     {
 
-        return this->CNP[0]%2 == 0 ? "FEMININ" : "MASCULIN";
+        return this->CNP[0] % 2 == 0 ? "FEMININ" : "MASCULIN";
     }
 
-    int getAge()
+    int getAge() const
     {
-        
+
         return Student::getCurrentYear() - this->birthYear;
     }
 
-    int getDifference()
+    int getDifference() const
     {
-        return this->facultyFoundedYear - this->getAge();
+        return abs(this->facultyFoundedYear - this->birthYear);
     }
 
     // getters
-    string getLastName()
+    string getLastName() const
     {
         return this->lastName;
     }
 
-    string getFirstName()
+    string getFirstName() const
     {
         return this->firstName;
     }
 
-    char* getCNP()
+    const char *getCNP() const
     {
         return this->CNP;
     }
 
-    string getFacultyName()
+    string getFacultyName() const
     {
         return this->facultyName;
     }
 
-    int getBirthYear()
+    int getBirthYear() const
     {
         return this->birthYear;
     }
 
-    int getFacultyFoundedYear()
+    int getFacultyFoundedYear() const
     {
         return this->facultyFoundedYear;
     }
-    
+
     // setters
-    void setCNP(const char* newCNP){
-        strcpy(this->CNP,newCNP);
+    void setCNP(const char *newCNP)
+    {
+        strcpy(this->CNP, newCNP);
     }
 
-    void setLastName(const string newLastName){
+    void setLastName(const string newLastName)
+    {
         this->lastName = newLastName;
     }
-    void setFirstName(const string newFirstName){
+    void setFirstName(const string newFirstName)
+    {
         this->firstName = newFirstName;
     }
 
-    void setFacultyName(string newFacultyName){
+    void setFacultyName(string newFacultyName)
+    {
         this->facultyName = newFacultyName;
     }
-    void setBirthYear(int newBirthYear){
+    void setBirthYear(int newBirthYear)
+    {
         this->birthYear = newBirthYear;
     }
-    void setFacultyFounderYear(int newFacultyFoundedYear){
+    void setFacultyFounderYear(int newFacultyFoundedYear)
+    {
         this->facultyFoundedYear = newFacultyFoundedYear;
     }
 
-    void displayAttributes(){
-        cout<<"Student"<<this->id<<":\n";
-        cout<<"Nume: "<<this->lastName<<endl;
-        cout<<"Prenume: "<<this->firstName<<endl;
-        cout<<"CNP: "<<this->CNP<<endl;
-        cout<<"Sex: "<<this->getGender()<<endl;
-        cout<<"Varsta: "<< this->getAge()<<endl;
-        cout<<"Anul nasterii: "<<this->getBirthYear()<<endl;
-        cout<<"Numele facultatii: "<<this->facultyName<<endl;
-        cout<<"Anul fondarii facultatii: "<<this->facultyFoundedYear<<endl<<endl; 
+    void displayAttributes()
+    {
+        cout << "Student" << this->id << ":\n";
+        cout << "Nume: " << this->lastName << endl;
+        cout << "Prenume: " << this->firstName << endl;
+        cout << "CNP: " << this->CNP << endl;
+        cout << "Sex: " << this->getGender() << endl;
+        cout << "Varsta: " << this->getAge() << endl;
+        cout << "Anul nasterii: " << this->getBirthYear() << endl;
+        cout << "Numele facultatii: " << this->facultyName << endl;
+        cout << "Anul fondarii facultatii: " << this->facultyFoundedYear << endl
+             << endl;
     }
-    
-    static int getCurrentYear() { // generat de gemini 
-    // 1. Get the current time (number of seconds since the Epoch)
-    time_t currentTime = time(nullptr);
 
-    // 2. Convert the time_t value to a structure (struct tm) representing
-    //    the local time.
-    tm* localTime = localtime(&currentTime);
+    static int getCurrentYear()
+    { // generat de gemini
+        // 1. Get the current time (number of seconds since the Epoch)
+        time_t currentTime = time(nullptr);
 
-    // 3. Access the tm_year member and adjust it.
-    //    tm_year is years since 1900.
-    if (localTime) {
-        return localTime->tm_year + 1900;
-    } else {
-        // Return 0 or handle error if localtime fails (rare, but good practice)
-        return 0; 
+        // 2. Convert the time_t value to a structure (struct tm) representing
+        //    the local time.
+        tm *localTime = localtime(&currentTime);
+
+        // 3. Access the tm_year member and adjust it.
+        //    tm_year is years since 1900.
+        if (localTime)
+        {
+            return localTime->tm_year + 1900;
+        }
+        else
+        {
+            // Return 0 or handle error if localtime fails (rare, but good practice)
+            return 0;
+        }
     }
-}
-    
-};  
+};
 
 int Student::numberOfStudents = 0;
 
 int main()
 {
-    Student stud1,stud2,stud3,stud4,stud5;
+    Student stud1, stud2, stud3, stud4, stud5;
     stud1.displayAttributes();
     stud2.displayAttributes();
     stud3.displayAttributes();
     stud4.displayAttributes();
     stud5.displayAttributes();
-    
-
 }
