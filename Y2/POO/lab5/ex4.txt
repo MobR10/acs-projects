@@ -1,0 +1,13 @@
+1.inainte de override la soundStricat():
+in main ruleaza fara probleme pisica.sound(), pentru ca mosteneste in continuare si are acces
+la functia sound din Animal. functia soundStricat devine o functie specifica clasei Cat.
+
+2.dupa adaugare override in dreptul functiei soundStricat din clasa Cat:
+eroare: 'void Cat::soundStricat()' marked 'override', but does not override
+
+3. explicatie eroare: 
+functia soundStricat nu e mostenita din parinte, asa ca nu are la ce sa faca override
+
+4. cum se foloseste override:
+override se poate folosi doar daca clasa respectiva este mostenita de la clasa parinte,
+altfel nu ai la ce sa dai override.
