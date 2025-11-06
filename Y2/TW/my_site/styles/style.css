@@ -171,7 +171,6 @@ ul{
   text-shadow: 2px 2px rgb(0, 0, 0);
 }
 
-/* todo: HEADER for all html files */
 @media screen and (max-width: 600px) {
   #contactForm #mailBody {
     width: 100%;
