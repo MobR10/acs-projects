@@ -43,21 +43,24 @@
       <span class="headerText" id="headerLabel"> My Site | Acasa </span>
     </header>
     <nav>
-      <a href="cv.html">
+      <!-- <a href="cv.html">
         <button>Curriculum Vitae</button>
       </a>
       <a href="contact.html">
         <button>Contact</button>
-      </a>
+      </a> -->
+
+      <select onchange="location.href=this.value;" >
+
+      <option selected hidden>Select Page</option>
+      <option value="portofolio.html">Portofolio</option>
+      <option value="cv.html">Curriculum Vitae</option>
+      <option value="contact.html">Contact</option>
+  
+      </select>
+
     </nav>
     <main>
-      <a id="a-fralogo"
-      href="https://www.fra.ro/" target="_blank">
-        <img 
-        id="img-fralogo"
-        alt="site federatia de atletism"
-        src="./images/logo-fra.jpg"> 
-      </a>
       <p>
         Salut, eu sunt Raffaele. Sunt student la Facultatea de Automatica si
         Calculatoare. Daca m-as descrie in cateva cuvinte, sunt o persoana calma, grijulie,

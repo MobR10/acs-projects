@@ -1,10 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="ro">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Contact</title>
+    <title>Home</title>
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -35,57 +35,50 @@
     />
   </head>
 
-  <body>
+<body>
     <header>
-      <h1 class="hidden-h1" hidden>CONTACT</h1>
+      <h1 class="hidden-h1" hidden>PORTOFOLIO</h1>
       <span class="headerText" id="headerLetter"> R </span>
 
-      <span class="headerText" id="headerLabel">
-        My Site | Contacteaza-ma
-      </span>
+      <span class="headerText" id="headerLabel"> My Site | Acasa </span>
     </header>
     <nav>
-      <!-- <a href="index.html">
-        <button>Acasa</button>
-      </a>
-      <a href="cv.html">
+      <!-- <a href="cv.html">
         <button>Curriculum Vitae</button>
+      </a>
+      <a href="contact.html">
+        <button>Contact</button>
       </a> -->
 
-    <select onchange="location.href=this.value;" >  
+      <select onchange="location.href=this.value;" >
+
       <option selected hidden>Select Page</option>
       <option value="index.html">Home</option>
-      <option value="portofolio.html">Portofolio</option>
       <option value="cv.html">Curriculum Vitae</option>
+      <option value="contact.html"> Contact  </option>
+  
       </select>
 
     </nav>
-    <main>
-      <form
-        id="contactForm"
-        action="mailto:anghelraffaele10@gmail.com?Subject=Subiect&Body=Nimic"
-        method="POST"
-        enctype="multipart/form-data"
+
+    <a id="a-fralogo"
+      href="https://www.fra.ro/" target="_blank">
+        <img 
+        id="img-fralogo"
+        alt="site federatia de atletism"
+        src="./images/logo-fra.jpg"> 
+      </a>
+
+      <img
+      id="park"
+      alt="image of a park alley"
+      src="./images/park.jpg"
       >
-        <div class="formElem">
-          <label for="mailSubject">Subiect:</label>
-          <input type="text" id="mailSubject" required /><br />
-        </div>
 
-        <div class="formElem">
-          <label for="mailBody">Cuprins:</label>
-          <textarea id="mailBody" rows="10"></textarea><br />
-        </div>
-
-        <input type="submit" value="Send Email" id="submitButton" />
-      </form>
-    </main>
-    <footer>
-      <hr />
-      <div id="footerText">
-        Autor: Anghel Raffaele<br />
-      &copy; Copyright Reserved<br />
-      </div>
-    </footer>
-  </body>
-</html>
+      <img
+      id="run"
+      alt="image of me running"
+      src="./images/run.jpg"
+      >
+</body>
+  </html>
