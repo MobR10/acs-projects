@@ -2,8 +2,11 @@
 #include "../headers/exceptions/OpenFileException.h"
 #include "../headers/exceptions/ReadUsersException.h"
 
+#include "../headers/functions.h"
+
 #include <iostream>
 #include <string>
+#include <limits>
 
 constexpr auto BEGIN = std::ios::beg;
 constexpr auto CURRENT = std::ios::cur;
@@ -39,6 +42,7 @@ Manager::Manager(const string& _fileName) {
             cout << "Point me to another file or write N to terminate the execution: ";
             string command;
             cin >> command;
+            clearInput();
 
             if (command == "N" || command == "n") {
                 cout<<"Terminating the program...";
