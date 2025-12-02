@@ -1,6 +1,4 @@
-#ifndef OPERATOR_H
-
-#define OPERATOR_H
+#pragma once
 
 #include "User.h"
 
@@ -16,4 +14,3 @@ class Operator: public User{
 
 
 };
-#endif

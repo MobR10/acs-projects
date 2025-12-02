@@ -1,6 +1,4 @@
-#ifndef OPENFILEEXCEPTION_H
-
-#define OPENFILEEXCEPTION_H
+#pragma once
 
 #include <string>
 
@@ -15,5 +13,3 @@ class OpenFileException: public exception{
     virtual const char* what() const noexcept;
     
 };
-
-#endif

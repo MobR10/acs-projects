@@ -1,6 +1,4 @@
-#ifndef CLIENT_H
-
-#define CLIENT_H
+#pragma once
 
 #include "User.h"
 #include <string>
@@ -12,5 +10,3 @@ class Client: public User{
     public:
     Client(const string& _email, const string& _password, const string& _name);
 };
-
-#endif

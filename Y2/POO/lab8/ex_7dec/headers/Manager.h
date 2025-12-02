@@ -1,6 +1,4 @@
-#ifndef MANAGER_H
-
-#define MANAGER_H
+#pragma once
 
 #include "User.h"
 #include "Client.h"
@@ -27,5 +25,3 @@ class Manager{
 
         int login(const string& email, const string& password);
 };
-
-#endif

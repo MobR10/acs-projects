@@ -1,6 +1,4 @@
-#ifndef USER_H
-
-#define USER_H
+#pragma once
 
 #include <string>
 using namespace std;
@@ -16,5 +14,3 @@ class User{
     User(const string& _email, const string& _password, const string& _role, const string& _name);
     virtual ~User();
 };
-
-#endif

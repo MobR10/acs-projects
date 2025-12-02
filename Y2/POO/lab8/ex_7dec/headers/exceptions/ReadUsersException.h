@@ -1,6 +1,4 @@
-#ifndef READUSERSEXCEPTION_H
-
-#define READUSERSEXCEPTION_H
+#pragma once
 
 #include <string>
 
@@ -15,5 +13,3 @@ class ReadUsersException: public exception{
     virtual const char* what() const noexcept;
     
 };
-
-#endif
