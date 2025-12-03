@@ -1,16 +1,22 @@
 #pragma once
 
 #include <string>
-using namespace std;
+
 class User{
 
     protected:
-    string email;
-    string password;
-    string role;
-    string name;
+    std::string email;
+    std::string password;
+    std::string role;
+    std::string name;
 
     public:
-    User(const string& _email, const string& _password, const string& _role, const string& _name);
+    User(const std::string& _email, const std::string& _password, const std::string& _role, const std::string& _name);
     virtual ~User();
+
+    std::string getEmail() const;
+    std::string getPassword() const;
+    std::string getRole() const;
+    std::string getName() const;
+    
 };

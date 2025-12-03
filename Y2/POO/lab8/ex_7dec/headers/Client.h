@@ -1,12 +1,15 @@
 #pragma once
 
 #include "User.h"
+#include "Trip.h"
 #include <string>
+#include <vector>
 
-using namespace std;
+class Trip;
 
 class Client: public User{
+    std::vector<Trip> reservedTrips;
     
     public:
-    Client(const string& _email, const string& _password, const string& _name);
+    Client(const std::string& _email, const std::string& _password, const std::string& _name);
 };

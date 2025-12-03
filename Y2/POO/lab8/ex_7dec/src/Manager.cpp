@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <memory>
+#include <vector>
 
 constexpr auto BEGIN = std::ios::beg;
 constexpr auto CURRENT = std::ios::cur;
@@ -58,11 +60,7 @@ Manager::Manager(const string& _fileName) {
 
 
 Manager::~Manager(){
-    // FREE UP MEMORY
-    for(size_t i=0;i<usersN;i++)
-        delete users[i];
-    delete[] users;
-
+    // Memory frees itself through vector and unique_ptr
     if(f.is_open())
         f.close();
 }
@@ -91,8 +89,6 @@ string Manager::readString(string& line){
 
 void Manager::readUsers(){
 
-    users = new User*[usersN];
-
     f.clear();
     f.seekg(0,BEGIN);
 
@@ -116,10 +112,12 @@ void Manager::readUsers(){
         const string name = readString(line);
 
         if(role == "client"){
-            users[usersIndex++] = new Client(email,password,name);
+            users.push_back(std::make_unique<Client>(email,password,name));
+            usersIndex++;
         }
         else if(role == "operator"){
-            users[usersIndex++] = new Operator(email,password,name);
+            users.push_back(std::make_unique<Operator>(email,password,name));
+            usersIndex++;
         }
         else{
             throw ReadUsersException(static_cast<int>(usersIndex));
@@ -127,12 +125,16 @@ void Manager::readUsers(){
     }
 }
 
-// template<typename T>
-// void Manager::login(const string& user, const string& password){
+User* Manager::login(const string& email, const string& password){
+    for(std::unique_ptr<User>& x: users){
+        if(x->getEmail() == email && x->getPassword()== password){
+            return x.get();
+        }
+    }
+    return nullptr;
+}
 
-// }
-
-// template <>
-// void Manager::login<Operator>(const string& user, const string& password){
-
-// }
+void Manager::logout(User*& user,int& userLoggedIn){
+    user = nullptr;
+    userLoggedIn = 0;
+}

@@ -6,13 +6,16 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
+#include <memory>
 
 using namespace std;
 
 class Manager{
     ifstream f;
     size_t usersN;
-    User **users;
+    vector<std::unique_ptr<User>> users;
+    
 
     void readUsers();
     void findUsersN();
@@ -23,5 +26,8 @@ class Manager{
 
         ~Manager();
 
-        int login(const string& email, const string& password);
+        User* login(const string& email, const string& password);
+
+        void logout(User*& user, int& userLoggedIn);
+
 };
