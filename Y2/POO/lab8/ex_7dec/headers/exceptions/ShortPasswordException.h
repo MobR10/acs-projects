@@ -2,12 +2,12 @@
 
 #include <string>
 
-class ReadUsersException: public std::exception{
+class ShortPasswordException: public std::exception{
 
     std::string message;
     
     public:
-    ReadUsersException(const int& userIndex);
+    ShortPasswordException(int minLength);
     virtual const char* what() const noexcept;
     
 };

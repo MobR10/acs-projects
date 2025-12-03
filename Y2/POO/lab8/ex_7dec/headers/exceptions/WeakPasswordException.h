@@ -2,12 +2,12 @@
 
 #include <string>
 
-class ReadUsersException: public std::exception{
+class WeakPasswordException: public std::exception{
 
     std::string message;
     
     public:
-    ReadUsersException(const int& userIndex);
+    WeakPasswordException();
     virtual const char* what() const noexcept;
     
 };

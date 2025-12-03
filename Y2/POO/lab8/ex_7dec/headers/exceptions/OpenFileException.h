@@ -2,14 +2,12 @@
 
 #include <string>
 
-using namespace std;
+class OpenFileException: public std::exception{
 
-class OpenFileException: public exception{
-
-    string message;
+    std::string message;
     
     public:
-    OpenFileException(const string& _fileName);
+    OpenFileException(const std::string& _fileName);
     virtual const char* what() const noexcept;
     
 };

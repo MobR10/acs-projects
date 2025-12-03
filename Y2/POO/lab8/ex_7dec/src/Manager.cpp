@@ -1,131 +1,302 @@
 #include "../headers/Manager.h"
+#include "../headers/functions.h"
+
+// exceptions
 #include "../headers/exceptions/OpenFileException.h"
 #include "../headers/exceptions/ReadUsersException.h"
-
-#include "../headers/functions.h"
+#include "../headers/exceptions/ReadTripsException.h"
+#include "../headers/exceptions/WeakPasswordException.h"
+#include "../headers/exceptions/ShortPasswordException.h"
+#include "../headers/exceptions/DifferentPasswordsException.h"
+#include "../headers/exceptions/WrongEmailFormatException.h"
+#include "../headers/exceptions/EmailAlreadyExistsException.h"
+#include "../headers/exceptions/InvalidTripIdException.h"
+#include "../headers/exceptions/WrongDateFormatException.h"
 
 #include <iostream>
 #include <string>
 #include <limits>
 #include <memory>
 #include <vector>
+#include <algorithm>
 
 constexpr auto BEGIN = std::ios::beg;
 constexpr auto CURRENT = std::ios::cur;
 constexpr auto END = std::ios::end;
 
-Manager::Manager(const string& _fileName) {
-    string fileName = _fileName;
+Manager::Manager(const std::string& _usersFileName,const std::string& _tripsFileName, const std::string& _mapFileName):
+usersFileName(_usersFileName), tripsFileName(_tripsFileName), mapFileName(_mapFileName)
+{
 
-    while (true) {
+    // LOAD TRIPS FILE
+    while(true){
         try{
             try {
-                f.open(fileName);
-                if (!f.is_open()) {
-                    throw OpenFileException(fileName);
+                tripsFile.open(tripsFileName, std::ios::in | std::ios::out);
+                if (!tripsFile.is_open()) {
+                    throw OpenFileException(tripsFileName);
                 }
                 }catch(const OpenFileException& e){
-                cout<<e.what()<<endl;
+                std::cout<<e.what()<<std::endl;
                 throw;
                 }
 
-                cout << "Se incarca utilizatorii din fisierul \"" << fileName << "\"...\n";
-                findUsersN();
+                std::cout << "Se incarca utilizatorii din fisierul \"" << tripsFileName << "\"...\n";
+                // findTripsN(); deprecated
+
+                try{
+                    readTrips();
+                }catch(const ReadTripsException& e){
+                    std::cout<<e.what()<<std::endl;
+                    throw;
+                }
+            }catch(...){
+                std::cout << "Point me to another file or write N to terminate the execution: ";
+                std::string command;
+                std::cin >> command;
+                clearInput();
+
+                if (command == "N" || command == "n") {
+                    std::cout<<"Terminating the program...";
+                    exit(0);
+                } else {
+                    tripsFileName = command;    // try new file
+                    tripsFile.close();  // close previous file before retry
+                }
+            }
+        break;   
+    }
+    
+    // LOAD USERS
+    while(true){
+        try{
+            try {
+                usersFile.open(usersFileName, std::ios::in | std::ios::out);
+                if (!usersFile.is_open()) {
+                    throw OpenFileException(usersFileName);
+                }
+                }catch(const OpenFileException& e){
+                std::cout<<e.what()<<std::endl;
+                throw;
+                }
+
+                std::cout << "Se incarca utilizatorii din fisierul \"" << usersFileName << "\"...\n";
+                // findUsersN(); deprecated
 
                 try{
                     readUsers();
                 }catch(const ReadUsersException& e){
-                    cout<<e.what()<<endl;
+                    std::cout<<e.what()<<std::endl;
                     throw;
                 }
+            }catch(...){
+                std::cout << "Point me to another file or write N to terminate the execution: ";
+                std::string command;
+                std::cin >> command;
+                clearInput();
 
-                break;  //exit loop
+                if (command == "N" || command == "n") {
+                    std::cout<<"Terminating the program...";
+                    exit(0);
+                } else {
+                    usersFileName = command; // try new file
+                    usersFile.close();          // close previous file before retry
+                }
+            }
+        break;
+    }
+
+    while(true){
+        try{
+            try{
+                mapFile.open(mapFileName, std::ios::in | std::ios::out );
+                if(!mapFile.is_open())
+                    throw OpenFileException(mapFileName);
+            }catch(const OpenFileException& e){
+                    std::cout<<e.what();
+            }
+
+            std::cout << "Se incarca utilizatorii din fisierul \"" << mapFileName << "\"...\n";
+
+            readMap();
+
         }catch(...){
-            cout << "Point me to another file or write N to terminate the execution: ";
-            string command;
-            cin >> command;
+            std::cout << "Point me to another file or write N to terminate the execution: ";
+            std::string command;
+            std::cin >> command;
             clearInput();
 
             if (command == "N" || command == "n") {
-                cout<<"Terminating the program...";
+                std::cout<<"Terminating the program...";
                 exit(0);
             } else {
-                fileName = command; // try new file
-                f.close();          // close previous file before retry
+                mapFileName = command;    // try new file
+                mapFile.close();  // close previous file before retry
             }
         }
+        break;
     }
-    cout << "Utilizatorii au fost incarcati cu succes!\n";
+
+    std::cout << "Fisierele au fost incarcate cu succes!\n";
 }
+
+
 
 
 Manager::~Manager(){
     // Memory frees itself through vector and unique_ptr
-    if(f.is_open())
-        f.close();
+    if(usersFile.is_open())
+        usersFile.close();
+    if(tripsFile.is_open())
+        tripsFile.close();
+    if(mapFile.is_open())
+        mapFile.close();
 }
 
-void Manager::findUsersN(){
-    f.clear();
-    f.seekg(0,BEGIN);
-
-    string line= "";
-    usersN = 0;
-
-    getline(f,line);
-
-    while(getline(f,line)){
-        usersN++;
-    }
-}
-
-string Manager::readString(string& line){
-    size_t comma = line.find(',');
-    string field = line.substr(0,comma);
+std::string Manager::readString(std::string& line){
+    std::size_t comma = line.find(',');
+    std::string field = line.substr(0,comma);
     line = line.substr(comma+1);
 
     return field;
 }
 
-void Manager::readUsers(){
+void Manager::readTrips(){
 
-    f.clear();
-    f.seekg(0,BEGIN);
+    trips.clear();
 
-    string line= "";
-    getline(f,line);
+    tripsFile.clear();
+    tripsFile.seekg(0,BEGIN);
 
-    size_t usersIndex= 0;
+    std::string line= "";
+    std::getline(tripsFile,line);
+
+    tripsN = 0;
     
-    while(getline(f,line)){
+    while(std::getline(tripsFile,line)){
+        // id,operatorId,name,city,date
 
-        // GET EMAIL
-        const string email = readString(line);
+        // GET id
+        const std::string id = readString(line);
+        tripIds.push_back(stoi(id));
+
+        // GET operatorID 
+        const std::string operatorId = readString(line);
+        
+        // GET Name
+        const std::string name = readString(line);
 
         // GET PASSWORD
-        const string password = readString(line);
+        const std::string city = readString(line);
 
         // GET ROLE
-        const string role = readString(line);
+        const std::string date = readString(line);
+        
+        trips.push_back(std::make_shared<Trip>(stoi(id),stoi(operatorId),name,city,date));
+    }
+}
+
+
+void Manager::readUsers(){
+
+    users.clear();
+
+    usersFile.clear();
+    usersFile.seekg(0,BEGIN);
+
+    std::string line= "";
+    std::getline(usersFile,line);
+
+    usersN = 0;
+    
+    while(std::getline(usersFile,line)){
+
+        // GET ID
+        const std::string id = readString(line);
+        userIds.push_back(stoi(id));
+
+        // GET EMAIL
+        const std::string email = readString(line);
+
+        // GET PASSWORD
+        const std::string password = readString(line);
+
+        // GET ROLE
+        const std::string role = readString(line);
         
         // GET NAME
-        const string name = readString(line);
+        const std::string name = readString(line);
 
         if(role == "client"){
-            users.push_back(std::make_unique<Client>(email,password,name));
-            usersIndex++;
+            users.push_back(std::make_unique<Client>(stoi(id),email,password,name));
+            usersN++;
         }
         else if(role == "operator"){
-            users.push_back(std::make_unique<Operator>(email,password,name));
-            usersIndex++;
+            users.push_back(std::make_unique<Operator>(stoi(id),email,password,name));
+            usersN++;
         }
         else{
-            throw ReadUsersException(static_cast<int>(usersIndex));
+            users.clear();
+            throw ReadUsersException(static_cast<int>(usersN)+1);
         }
     }
 }
 
-User* Manager::login(const string& email, const string& password){
+void Manager::readMap(){
+
+    mapFile.clear();
+    mapFile.seekg(0,BEGIN);
+
+    std::string line = "";
+
+    getline(mapFile,line);
+
+    while(getline(mapFile,line)){
+        
+        std::size_t tripId = stoi(readString(line));
+
+        std::size_t clientId = stoi(readString(line));
+
+        for(auto& trip: trips){
+            if(trip->getId() == tripId){
+                for(auto& user: users){
+                    if(user->getId() == clientId){
+                        Client *client = dynamic_cast<Client*>(user.get());
+                        if(client){
+                            client->getReservedTrips().push_back(trip);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+void Manager::checkEmailFormat(const std::string& email){
+    if(email.size() == 1)
+        throw WrongEmailFormatException();
+
+    if(email.find_first_of("@") == std::string::npos)
+        throw WrongEmailFormatException();
+    
+    if(email.find_first_of("@") != email.find_last_of("@"))
+        throw WrongEmailFormatException();
+
+    std::size_t location = email.find("@");
+    if(email.substr(0,location).size() == 0)
+        throw WrongEmailFormatException();
+    
+    if(email.substr(location+1).size() == 0)
+        throw WrongEmailFormatException();
+
+    for(auto& x: users){
+        if(x->getEmail() == email)
+            throw EmailAlreadyExistsException();
+    }
+}
+
+User* Manager::login(const std::string& email, const std::string& password){
     for(std::unique_ptr<User>& x: users){
         if(x->getEmail() == email && x->getPassword()== password){
             return x.get();
@@ -137,4 +308,213 @@ User* Manager::login(const string& email, const string& password){
 void Manager::logout(User*& user,int& userLoggedIn){
     user = nullptr;
     userLoggedIn = 0;
+}
+
+std::size_t Manager::allocateId(std::vector<std::size_t>& idArray){
+    std::sort(idArray.begin(),idArray.end());
+
+    size_t validId = 1;
+
+    for(std::size_t value: idArray){
+        if(value == validId){
+            validId++;
+        }
+        else if(value > validId){
+            break;
+        }
+    }
+
+    return validId;
+}
+
+void Manager::registerUser(const std::string& name,const std::string& email, const std::string& password){
+
+    usersFile.clear();
+    usersFile.seekp(0,END);
+
+    std::streampos fileSize = usersFile.tellg();
+
+    if(fileSize > 0){
+       // check for last character in the file for proper writing
+    usersFile.seekg(-1,END);
+    char lastChar;
+    usersFile.get(lastChar);
+    if(lastChar !='\n')
+        usersFile<< '\n'; 
+    }
+    
+    usersFile.seekp(0,END);
+
+    std::size_t allocatedId = allocateId(userIds); 
+    // id, email, parola, role, name
+    usersFile <<  allocatedId << "," << email << "," << password << ",client," << name << "\n";
+    
+    usersFile.flush(); // ensure data is written
+
+    usersN++;
+    
+    users.push_back(std::make_unique<User>(allocatedId,email,password,"client",name));
+}
+std::string Manager::getOperatorName(std::size_t id){
+    for(auto& user: users){
+        if(user->getId() == id)
+            {
+                return user->getName();
+            }
+    }
+    return "N/A";
+}
+void Manager::displayTrips(){
+    std::cout<<"================\nHere are all the trips we have:\n";
+    for(auto& trip: trips){
+        trip->printInfo(*this);
+    }
+}
+
+void Manager::displayReservedTrips(User& user){
+    std::cout<<"================\nHere are all the trips we have for you:\n";
+    for(auto& trip: (static_cast<Client&>(user)).getReservedTrips()){
+        trip->printInfo(*this);
+    }
+}
+
+// id(_id), name(_name), city(_city), date(_date)
+void Manager::registerTrip(Operator& operatorUser, const std::string& name, const std::string& city, const std::string& date){
+    
+    if(!isValidDate(date))
+        throw WrongDateFormatException();
+
+    tripsFile.clear();
+    tripsFile.seekp(0,END);
+
+    std::streampos fileSize = tripsFile.tellg();
+
+    // check for last character in the file for proper writing
+    if (fileSize> 0) {
+    tripsFile.seekg(-1,END);
+    char lastChar;
+    tripsFile.get(lastChar);
+    if(lastChar !='\n')
+        tripsFile<< '\n';
+    }
+
+    tripsFile.seekp(0, END);
+
+    size_t allocatedId = allocateId(tripIds);
+    // id,operatorId,name,city,date
+    tripsFile << allocatedId << "," << operatorUser.getId() << "," << name << "," << city << "," << date << "\n";
+    
+    tripsFile.flush(); // ensure data is written
+
+    tripsN++;
+    trips.push_back(std::make_shared<Trip>(allocatedId,operatorUser.getId(),name,city,date));
+}
+
+void Manager::reserveTrip(Client& client,std::size_t tripId){
+
+    int tripExists = 0;
+    for(auto& trip: trips){
+        if(trip->getId() == tripId){
+            tripExists = 1;
+            client.getReservedTrips().push_back(trip);
+            break;
+        }
+    }
+
+    if(!tripExists)
+        throw InvalidTripIdException();
+
+    mapFile.clear();
+    mapFile.seekp(0,END);
+
+    std::streampos fileSize = tripsFile.tellg();
+
+    if(fileSize > 0){
+       // check for last character in the file for proper writing
+    mapFile.seekg(-1,END);
+    char lastChar;
+    mapFile.get(lastChar);
+    if(lastChar !='\n')
+        mapFile<< '\n'; 
+    }
+
+    tripsFile.seekp(0,END);
+    
+    // tripId,clientID
+    mapFile << tripId << "," << client.getId() << "";
+    
+    mapFile.flush(); // ensure data is written    
+}
+
+// TODO : fix this
+void Manager::deleteTrip(Operator& operatorUser, std::size_t tripId) {
+
+    int tripExists = 0;
+    for(auto& trip: trips){
+        if(trip->getId() == tripId){   
+            if(trip->getOperatorId() != operatorUser.getId())
+                throw InvalidTripIdException();
+            tripExists = 1;
+            break;
+        }
+    }
+    if(!tripExists)
+        throw InvalidTripIdException();
+    // Check if any client has reserved this trip
+    for (auto& user : users) {
+        if (user->getRole() == "client") {
+            Client& client = dynamic_cast<Client&>(*user);
+            for (auto& trip : client.getReservedTrips()) {
+                if (trip->getId() == tripId) {
+                    std::cout << "Cannot delete a trip that is reserved by users!\n";
+                    return; // abort deletion
+                }
+            }
+        }
+    }
+
+    // Delete the trip from Manager's trips vector
+    auto it = std::remove_if(trips.begin(), trips.end(),
+                             [tripId](const std::shared_ptr<Trip>& t){ return t->getId() == tripId; });
+    if (it != trips.end()) {
+        trips.erase(it, trips.end());
+        std::cout << "Trip deleted from Manager's memory.\n";
+    }
+
+    // Remove the trip from all clients' reservedTrips (if needed)
+    for (auto& user : users) {
+        if (user->getRole() == "client") {
+            Client& client = dynamic_cast<Client&>(*user);
+            auto& reserved = client.getReservedTrips();
+            reserved.erase(
+                std::remove_if(reserved.begin(), reserved.end(),
+                               [tripId](const std::shared_ptr<Trip>& t){ return t->getId() == tripId; }),
+                reserved.end()
+            );
+        }
+    }
+
+    // Delete the trip from the mapFile CSV (tripId,clientId)
+    mapFile.clear();
+    mapFile.seekg(0, BEGIN);
+
+    std::vector<std::string> lines;
+    std::string line;
+
+    while (getline(mapFile, line)) {
+        if (line.empty()) continue;
+        std::size_t idInLine = std::stoul(line.substr(0, line.find(',')));
+        if (idInLine != tripId) {
+            lines.push_back(line);
+        }
+    }
+
+    mapFile.close();
+    mapFile.open(mapFileName, std::ios::out | std::ios::trunc);
+    for (const auto& l : lines) {
+        mapFile << l << "\n";
+    }
+    mapFile.flush();
+
+    std::cout << "Trip deleted from map file.\n";
 }

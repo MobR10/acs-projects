@@ -1,3 +1,6 @@
-role,email,password,name
-lolo@gmail.com,parola,operator,operator1
-yeye@ymail.com,parolaputernica,operator,operator2
+id,email,parola,role,name
+1,lolo@gmail.com,parola,operator,operator1
+2,yeye@ymail.com,parolaputernica,operator,operator2
+3,name@gmail.com,12345678!,client,name
+4,gigel@gmail,riglamate123,client,gigel
+5,sigma@gmail.com,sigmapassword!,client,sigma

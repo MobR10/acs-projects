@@ -3,6 +3,15 @@
 #include "../headers/Operator.h"
 #include "../headers/User.h"
 
+
+#include "../headers/exceptions/DifferentPasswordsException.h"
+#include "../headers/exceptions/WeakPasswordException.h"
+#include "../headers/exceptions/ShortPasswordException.h"
+#include "../headers/exceptions/WrongEmailFormatException.h"
+#include "../headers/exceptions/EmailAlreadyExistsException.h"
+#include "../headers/exceptions/InvalidTripIdException.h"
+#include "../headers/exceptions/WrongDateFormatException.h"
+
 // C++
 #include <iostream>
 #include <string>
@@ -12,7 +21,9 @@
 using namespace std;
 
 // macros
-const string fisier = "users.csv";
+const string users = "users.csv";
+const string trips = "trips.csv";
+const string map = "trips_clients_map.csv";
 
 #include "../headers/functions.h"
 
@@ -24,7 +35,7 @@ int main(){
 
     User* user = NULL;
 
-    Manager manager(fisier);
+    Manager manager(users,trips,map);
 
     do{
         if(!once){
@@ -42,12 +53,24 @@ int main(){
             "0. Exit"<<endl
             ;
         } else{
-            cout<<
+            if(user->getRole() == "client"){
+                cout<<
             "1. Vezi curse"<<endl<<
             "2. Rezerva cursa"<<endl<<
-            "3. Log out"<<endl<<
+            "3. Vezi curse rezervate"<<endl<<
+            "4. Log out"<<endl<<
             "0. Exit"<<endl
             ;
+            }
+            else{
+               cout<<
+            "1. Vezi curse"<<endl<<
+            "2. Inregistreaza cursa"<<endl<<
+            "3. Sterge cursa"<<endl<<
+            "4. Log out"<<endl<<
+            "0. Exit"<<endl
+            ; 
+            }
         }
 
         cout<<"Waiting for input: ";
@@ -66,8 +89,15 @@ int main(){
                 }
                 }
             else{
-                if(!isValidInput(command,"0123")){
-                    ok=0;
+                if(user->getRole() == "client"){
+                    if(!isValidInput(command,"01234")){
+                        ok=0;
+                }
+                }
+                else{
+                    if(!isValidInput(command,"01234")){
+                        ok = 0;
+                    }
                 }
                 
             }
@@ -80,13 +110,50 @@ int main(){
             cout<<"Terminating program...";
             exit(0);
         }
-            
+        string name, email, password, confirmPassword,passwordStrength, city, date,id;
         if(!userLoggedIn)
             switch(option){
-                // case 1: manager.register(); break;
-                case 2: 
-                string email = readValue("email");
-                string password = readValue("password");
+                case 1: // REGISTER
+                name = readValue("name");
+
+                emailInput:
+                email = readValue("email");
+                try{
+                    manager.checkEmailFormat(email);
+                }catch(const WrongEmailFormatException& e){
+                    cout<<e.what();
+                    goto emailInput;
+                }catch(const EmailAlreadyExistsException& e){
+                    cout<<e.what();
+                    goto emailInput;
+                }
+
+                passwordsInput:
+                password = readValue("password");
+                confirmPassword = readValue("confirmPassword");
+                try{
+                    try{
+                        passwordStrength= manager.checkPassword(password,confirmPassword);   
+                    }catch(const WeakPasswordException& e){
+                        cout<<e.what();
+                        throw;
+                    }catch(const ShortPasswordException& e){
+                        cout<<e.what();
+                        throw;
+                    }catch(const DifferentPasswordsException& e){
+                        cout<<e.what();
+                        throw;
+                    }
+                }catch(...){
+                    goto passwordsInput;
+                }
+
+                cout<<"Password strength: " + passwordStrength + "\n";
+                manager.registerUser(name,email,password);
+                break;
+                case 2: // LOGIN
+                email = readValue("email");
+                password = readValue("password");
                 user = manager.login(email,password); 
                 if(!user)
                     cout<<"Wrong email or password. Try again"<<endl;
@@ -95,15 +162,67 @@ int main(){
                     cout<<"Logged in succesfully!"<<endl<<"User: "<<user->getName()<<endl<<"Role: "<< user->getRole();
                 }
                 break;
-                // case 3: manager.getTrips(); break;
+                case 3: manager.displayTrips(); break;
             }
-        else
-            switch (option)
-            {
-            // case 1: manager.getTrips(); break;
-            // case 2: manager.reserveTrip(); break;
-            case 3: manager.logout(user,userLoggedIn); break;          
+        else{
+            if(user->getRole() == "client"){
+                /*
+                "1. Vezi curse"<<endl<<
+            "2. Rezerva cursa"<<endl<<
+            "3. Vezi curse rezervate"<<endl<<
+            "4. Log out"<<endl<<
+            "0. Exit"<<endl
+                */
+                switch (option){
+                    case 1: manager.displayTrips(); break;
+                    case 2: 
+                    reserveID:
+                    id = readValue("Trip Id");
+                    try{
+                        manager.reserveTrip(static_cast<Client&>(*user),stoi(id)); break;
+                    }catch(const InvalidTripIdException& e){
+                        cout<< e.what();
+                        goto reserveID;
+                    }
+                    case 3:
+                    manager.displayReservedTrips(*user);
+                    break;
+                    case 4: manager.logout(user,userLoggedIn); break;
+                }
+            }else{
+                /*
+                1. Vezi curse"<<endl<<
+            "2. Inregistreaza cursa"<<endl<<
+            "3. Sterge cursa"<<endl<<
+            "4. Log out"<<endl<<
+            "0. Exit"<<endl*/
+                switch(option){
+                    case 1: manager.displayTrips(); break;
+                    case 2: 
+                    name = readValue("name");
+                    city = readValue("city");
+                    dateInput:
+                    date = readValue("date");
+                    try{
+                        manager.registerTrip(static_cast<Operator&>(*user),name,city,date); break;
+                    }catch(const WrongDateFormatException& e){
+                        cout<< e.what();
+                        goto dateInput;
+                    }
+                    case 3: 
+                    deleteId:
+                    id = readValue("trip id");
+                    try{
+                        manager.deleteTrip(static_cast<Operator&>(*user),stoi(id));
+                    }catch(const InvalidTripIdException& e){
+                        cout<< e.what();
+                        goto deleteId;
+                    }
+                    case 4:
+                    manager.logout(user,userLoggedIn);
+                }
             }
+        }
 
     }while(run);
 

@@ -2,12 +2,12 @@
 
 #include <string>
 
-class ReadUsersException: public std::exception{
+class WrongEmailFormatException: public std::exception{
 
     std::string message;
     
     public:
-    ReadUsersException(const int& userIndex);
+    WrongEmailFormatException();
     virtual const char* what() const noexcept;
     
 };

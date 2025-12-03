@@ -2,12 +2,12 @@
 
 #include <string>
 
-class ReadUsersException: public std::exception{
+class LoginFailedException: public std::exception{
 
     std::string message;
     
     public:
-    ReadUsersException(const int& userIndex);
+    LoginFailedException();
     virtual const char* what() const noexcept;
     
 };

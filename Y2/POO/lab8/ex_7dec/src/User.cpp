@@ -3,24 +3,26 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-User::User(const string& _email, const string& _password, const string& _role, const string& _name):
-    email(_email),password(_password),role(_role),name(_name){}
+User::User(std::size_t _id,const std::string& _email, const std::string& _password, const std::string& _role, const std::string& _name):
+    id(_id), email(_email), password(_password), role(_role), name(_name){}
 
 User::~User(){}
 
-std::string User::getEmail() const{
-    return this->email;
+std::size_t User::getId() const{
+    return this->id;
 }
 
-std::string User::getPassword() const{
-    return this->password;
+const std::string User::getEmail() const{
+    return email;
 }
-std::string User::getRole() const{
-    return this->role;
+
+const std::string User::getPassword() const{
+    return password;
 }
-std::string User::getName() const{
-    return this->name;
+const std::string User::getRole() const{
+    return role;
+}
+const std::string User::getName() const{
+    return name;
 }
 
