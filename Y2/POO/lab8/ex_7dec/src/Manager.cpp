@@ -12,7 +12,10 @@
 #include "../headers/exceptions/EmailAlreadyExistsException.h"
 #include "../headers/exceptions/InvalidTripIdException.h"
 #include "../headers/exceptions/WrongDateFormatException.h"
+#include "../headers/exceptions/PastDateException.h"
+#include "../headers/exceptions/OperatorNotTripOwner.h"
 
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <limits>
@@ -353,6 +356,7 @@ void Manager::registerUser(const std::string& name,const std::string& email, con
 
     usersN++;
     
+    userIds.push_back(allocatedId);
     users.push_back(std::make_unique<User>(allocatedId,email,password,"client",name));
 }
 std::string Manager::getOperatorName(std::size_t id){
@@ -381,8 +385,11 @@ void Manager::displayReservedTrips(User& user){
 // id(_id), name(_name), city(_city), date(_date)
 void Manager::registerTrip(Operator& operatorUser, const std::string& name, const std::string& city, const std::string& date){
     
-    if(!isValidDate(date))
+    int dateValidation = isValidDate(date);
+    if(dateValidation == 0)
         throw WrongDateFormatException();
+    if(dateValidation == -1)
+        throw PastDateException();
 
     tripsFile.clear();
     tripsFile.seekp(0,END);
@@ -453,13 +460,14 @@ void Manager::deleteTrip(Operator& operatorUser, std::size_t tripId) {
     for(auto& trip: trips){
         if(trip->getId() == tripId){   
             if(trip->getOperatorId() != operatorUser.getId())
-                throw InvalidTripIdException();
+                throw OperatorNotTripOwner();
             tripExists = 1;
             break;
         }
     }
     if(!tripExists)
         throw InvalidTripIdException();
+
     // Check if any client has reserved this trip
     for (auto& user : users) {
         if (user->getRole() == "client") {
@@ -495,26 +503,4 @@ void Manager::deleteTrip(Operator& operatorUser, std::size_t tripId) {
     }
 
     // Delete the trip from the mapFile CSV (tripId,clientId)
-    mapFile.clear();
-    mapFile.seekg(0, BEGIN);
-
-    std::vector<std::string> lines;
-    std::string line;
-
-    while (getline(mapFile, line)) {
-        if (line.empty()) continue;
-        std::size_t idInLine = std::stoul(line.substr(0, line.find(',')));
-        if (idInLine != tripId) {
-            lines.push_back(line);
-        }
-    }
-
-    mapFile.close();
-    mapFile.open(mapFileName, std::ios::out | std::ios::trunc);
-    for (const auto& l : lines) {
-        mapFile << l << "\n";
-    }
-    mapFile.flush();
-
-    std::cout << "Trip deleted from map file.\n";
 }

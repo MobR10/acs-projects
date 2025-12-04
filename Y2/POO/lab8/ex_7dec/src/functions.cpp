@@ -26,6 +26,13 @@ std::string readValue(const std::string& field){
     return line;    
 }
 
+/// @brief 
+/// @param date 
+/// @return 1 if the date is in a correct format and chronological order
+/// 
+/// 0  (wrong format) 
+///
+/// -1 (chronologically incorrect)  
 int isValidDate(const std::string& date){
     // dd/mm/yyyy
     if(date.size() != 10)
@@ -53,13 +60,13 @@ int isValidDate(const std::string& date){
     std::string day = buffer;
 
     if(date.substr(6) < year)
-        return 0;
+        return -1;
     
     if(date.substr(3,4) < month)
-        return 0;
+        return -1;
     
     if(date.substr(0,1) < day)
-        return 0;
+        return -1;
 
     return 1;
 }

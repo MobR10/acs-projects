@@ -34,7 +34,8 @@ const std::string& Trip::getDate() const {
 
 void Trip::printInfo(Manager& manager){
     std::cout<<"Trip ID = " + std::to_string(id) + "\n";
-    std::cout<<"Operator's name: " + manager.getOperatorName(operatorId) + "\n";
+    std::cout<<"Owner operator's name: " + manager.getOperatorName(operatorId) + "\n";
+    std::cout<<"Trip name: " + name + "\n";
     std::cout<<"City: " + city + "\n";
     std::cout<<"Date: " + date + "\n================\n";
 }

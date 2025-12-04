@@ -11,6 +11,8 @@
 #include "../headers/exceptions/EmailAlreadyExistsException.h"
 #include "../headers/exceptions/InvalidTripIdException.h"
 #include "../headers/exceptions/WrongDateFormatException.h"
+#include "../headers/exceptions/PastDateException.h"
+#include "../headers/exceptions/OperatorNotTripOwner.h"
 
 // C++
 #include <iostream>
@@ -208,6 +210,9 @@ int main(){
                     }catch(const WrongDateFormatException& e){
                         cout<< e.what();
                         goto dateInput;
+                    }catch(const PastDateException& e){
+                        cout<< e.what();
+                        goto dateInput;
                     }
                     case 3: 
                     deleteId:
@@ -217,7 +222,11 @@ int main(){
                     }catch(const InvalidTripIdException& e){
                         cout<< e.what();
                         goto deleteId;
+                    }catch(const OperatorNotTripOwner& e){
+                        cout<< e.what();
+                        goto deleteId;
                     }
+                    break;
                     case 4:
                     manager.logout(user,userLoggedIn);
                 }
@@ -225,11 +234,4 @@ int main(){
         }
 
     }while(run);
-
-
-
-    
-
-    
-
 }
