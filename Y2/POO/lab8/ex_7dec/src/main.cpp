@@ -13,6 +13,7 @@
 #include "../headers/exceptions/WrongDateFormatException.h"
 #include "../headers/exceptions/PastDateException.h"
 #include "../headers/exceptions/OperatorNotTripOwner.h"
+#include "../headers/exceptions/AlreadyReservedException.h"
 
 // C++
 #include <iostream>
@@ -60,7 +61,9 @@ int main(){
             "1. Vezi curse"<<endl<<
             "2. Rezerva cursa"<<endl<<
             "3. Vezi curse rezervate"<<endl<<
-            "4. Log out"<<endl<<
+            "4. Anuleaza rezervarea"<<endl<<
+            "5. Cauta cursa"<<endl<<
+            "6. Log out"<<endl<<
             "0. Exit"<<endl
             ;
             }
@@ -69,7 +72,8 @@ int main(){
             "1. Vezi curse"<<endl<<
             "2. Inregistreaza cursa"<<endl<<
             "3. Sterge cursa"<<endl<<
-            "4. Log out"<<endl<<
+            "4. Cauta cursa"<<endl<<
+            "5. Log out"<<endl<<
             "0. Exit"<<endl
             ; 
             }
@@ -92,12 +96,12 @@ int main(){
                 }
             else{
                 if(user->getRole() == "client"){
-                    if(!isValidInput(command,"01234")){
+                    if(!isValidInput(command,"0123456")){
                         ok=0;
                 }
                 }
                 else{
-                    if(!isValidInput(command,"01234")){
+                    if(!isValidInput(command,"012345")){
                         ok = 0;
                     }
                 }
@@ -112,7 +116,7 @@ int main(){
             cout<<"Terminating program...";
             exit(0);
         }
-        string name, email, password, confirmPassword,passwordStrength, city, date,id;
+        string name, email, password, confirmPassword,passwordStrength, city, date,id, keyword;
         if(!userLoggedIn)
             switch(option){
                 case 1: // REGISTER
@@ -172,7 +176,9 @@ int main(){
                 "1. Vezi curse"<<endl<<
             "2. Rezerva cursa"<<endl<<
             "3. Vezi curse rezervate"<<endl<<
-            "4. Log out"<<endl<<
+            "4. Anuleaza rezervarea"<<endl<<
+            "5. Cauta cursa"<<endl<<
+            "6. Log out"<<endl<<
             "0. Exit"<<endl
                 */
                 switch (option){
@@ -185,18 +191,36 @@ int main(){
                     }catch(const InvalidTripIdException& e){
                         cout<< e.what();
                         goto reserveID;
+                    }catch(const AlreadyReservedException& e){
+                        cout<< e.what();
+                        goto reserveID;
                     }
                     case 3:
                     manager.displayReservedTrips(*user);
                     break;
-                    case 4: manager.logout(user,userLoggedIn); break;
+                    case 4:
+                    unreserveID:
+                    id = readValue("Trip Id");
+                    try{
+                        manager.unreserveTrip(static_cast<Client&>(*user),stoi(id)); break;
+                    }catch(const InvalidTripIdException& e){
+                        cout<< e.what();
+                        goto unreserveID;
+                    }
+                    case 5:
+                        keyword = readValue("keyword");
+                        manager.searchTrip(keyword);
+                        break;
+                    case 6:
+                        manager.logout(user,userLoggedIn); break;
                 }
             }else{
                 /*
                 1. Vezi curse"<<endl<<
             "2. Inregistreaza cursa"<<endl<<
             "3. Sterge cursa"<<endl<<
-            "4. Log out"<<endl<<
+            "4. Cauta cursa"<<endl<<
+            "5. Log out"<<endl<<
             "0. Exit"<<endl*/
                 switch(option){
                     case 1: manager.displayTrips(); break;
@@ -228,6 +252,10 @@ int main(){
                     }
                     break;
                     case 4:
+                        keyword = readValue("keyword");
+                        manager.searchTrip(keyword);
+                        break;
+                    case 5:
                     manager.logout(user,userLoggedIn);
                 }
             }

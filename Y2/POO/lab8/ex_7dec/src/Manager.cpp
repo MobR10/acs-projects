@@ -13,6 +13,7 @@
 #include "../headers/exceptions/InvalidTripIdException.h"
 #include "../headers/exceptions/WrongDateFormatException.h"
 #include "../headers/exceptions/PastDateException.h"
+#include "../headers/exceptions/AlreadyReservedException.h"
 #include "../headers/exceptions/OperatorNotTripOwner.h"
 
 #include <stdio.h>
@@ -382,6 +383,17 @@ void Manager::displayReservedTrips(User& user){
     }
 }
 
+void Manager::searchTrip(const std::string& keyword){
+    std::cout<<"================\nHere are the trips matching your search:\n";
+    for(auto& trip: trips){
+        if(trip->getName().find(keyword) != std::string::npos ||
+           trip->getCity().find(keyword) != std::string::npos ||
+           trip->getDate().find(keyword) != std::string::npos){
+                trip->printInfo(*this);
+           }
+    }
+}
+
 // id(_id), name(_name), city(_city), date(_date)
 void Manager::registerTrip(Operator& operatorUser, const std::string& name, const std::string& city, const std::string& date){
     
@@ -420,6 +432,18 @@ void Manager::registerTrip(Operator& operatorUser, const std::string& name, cons
 void Manager::reserveTrip(Client& client,std::size_t tripId){
 
     int tripExists = 0;
+    int tripAlreadyReserved = 0;
+    
+    for(auto& trip: client.getReservedTrips()){
+        if(trip->getId() == tripId){
+            tripAlreadyReserved = 1;
+            break;
+        }
+    }
+    if(tripAlreadyReserved){
+        throw AlreadyReservedException();
+    }
+
     for(auto& trip: trips){
         if(trip->getId() == tripId){
             tripExists = 1;
@@ -434,15 +458,16 @@ void Manager::reserveTrip(Client& client,std::size_t tripId){
     mapFile.clear();
     mapFile.seekp(0,END);
 
-    std::streampos fileSize = tripsFile.tellg();
+    std::streampos fileSize = mapFile.tellg();
 
     if(fileSize > 0){
        // check for last character in the file for proper writing
     mapFile.seekg(-1,END);
     char lastChar;
     mapFile.get(lastChar);
-    if(lastChar !='\n')
+    if(lastChar != '\n')
         mapFile<< '\n'; 
+        
     }
 
     tripsFile.seekp(0,END);
@@ -451,6 +476,41 @@ void Manager::reserveTrip(Client& client,std::size_t tripId){
     mapFile << tripId << "," << client.getId() << "";
     
     mapFile.flush(); // ensure data is written    
+}
+
+void Manager::unreserveTrip(Client& client, std::size_t tripId){
+    auto& reserved = client.getReservedTrips();
+    auto it = std::remove_if(reserved.begin(), reserved.end(),
+                             [tripId](const std::shared_ptr<Trip>& t){ return t->getId() == tripId; });
+    
+    if(it == reserved.end()) {
+        throw InvalidTripIdException();
+    }
+
+    
+    reserved.erase(it, reserved.end());
+    std::cout << "Trip unreserved from Client's memory.\n";
+
+    // Delete the trip from the mapFile CSV (tripId,clientId)
+    mapFile.clear();
+    mapFile.seekg(0, BEGIN);
+    std::string tempFileName = "temp.csv";
+    std::ofstream tempFile(tempFileName);
+    tempFile << "tripId,clientId\n"; // write header
+    std::string line;
+    std::getline(mapFile, line);
+    while (std::getline(mapFile, line)) {
+        std::size_t currentTripId = stoi(line.substr(0, line.find(',')));
+        if (currentTripId != tripId) {
+            tempFile << line << "\n";
+        }
+    }
+    tempFile.close();
+    mapFile.close();
+    std::remove(mapFileName.c_str());
+    std::rename(tempFileName.c_str(), mapFileName.c_str());
+
+    mapFile.open(mapFileName, std::ios::in | std::ios::out);
 }
 
 // TODO : fix this
@@ -503,4 +563,24 @@ void Manager::deleteTrip(Operator& operatorUser, std::size_t tripId) {
     }
 
     // Delete the trip from the mapFile CSV (tripId,clientId)
+    tripsFile.clear();
+    tripsFile.seekg(0, BEGIN);
+    std::string tempFileName = "temp.csv";
+    std::ofstream tempFile(tempFileName);
+    tempFile << "id,operatorId,name,city,date\n"; // write header
+    std::string line;
+    std::getline(tripsFile, line);
+    while (std::getline(tripsFile, line)) {
+        std::size_t currentTripId = stoi(line.substr(0, line.find(',')));
+        if (currentTripId != tripId) {
+            tempFile << line << "\n";
+        }
+    }
+    tempFile.close();
+    tripsFile.close();
+    std::remove(tripsFileName.c_str());
+    std::rename(tempFileName.c_str(), tripsFileName.c_str());
+
+    tripsFile.open(tripsFileName, std::ios::in | std::ios::out);
+
 }

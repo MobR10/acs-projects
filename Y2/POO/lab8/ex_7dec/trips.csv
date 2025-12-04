@@ -1,7 +1,9 @@
 id,operatorId,name,city,date
-1,1,cursa1,bacau,10.10.2025
 2,1,cursa2,focsani,10.10.2025
 3,2,cursa3,cluj,10.91.2024
 4,1,cursa smechera,bucuresti,10/11/2025
 5,1,Carasel's adventure,Onesti City,11/12/2025
 6,1,Medeea's adventure,Buciresti,10/12/2025
+1,1,cursa noua,trebuci,10/12/2025
+7,1,calatorie in trebuci,coi,10/12/2025
+8,1,galuste,ploiesti,31/12/2025

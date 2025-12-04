@@ -41,31 +41,42 @@ int isValidDate(const std::string& date){
     if(date.find_first_of("/") != 2 || date.find_last_of("/") != 5)
         return 0;
 
+    std::string inputYear = date.substr(6);
+    std::string inputMonth = date.substr(3,2);
+    std::string inputDay = date.substr(0,2);
+
+    // check for valid month and day values
+    if(inputMonth < "01" || inputMonth > "12")
+        return 0;
     
+    if(inputDay < "01" || inputDay > "31")
+        return 0;
+
     std::time_t t = std::time(nullptr);
     std::tm* now = std::localtime(&t);
 
     char buffer[5];
-
     // Year
     std::sprintf(buffer, "%04d", now->tm_year + 1900);
-    std::string year = buffer;
+    std::string currentYear = buffer;
 
     // Month
     std::sprintf(buffer, "%02d", now->tm_mon + 1);
-    std::string month = buffer;
+    std::string currentMonth = buffer;
 
     // Day
     std::sprintf(buffer, "%02d", now->tm_mday);
-    std::string day = buffer;
+    std::string currentDay = buffer;
+    
+    // check for past date
 
-    if(date.substr(6) < year)
+    if(inputYear < currentYear)
         return -1;
     
-    if(date.substr(3,4) < month)
+    if(inputMonth < currentMonth)
         return -1;
     
-    if(date.substr(0,1) < day)
+    if(inputDay < currentDay)
         return -1;
 
     return 1;

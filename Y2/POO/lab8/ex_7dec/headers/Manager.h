@@ -91,7 +91,11 @@ class Manager{
 
         void reserveTrip(Client& client,std::size_t tripId);
 
+        void unreserveTrip(Client& client, std::size_t tripId);
+
         void displayTrips();
+
+        void searchTrip(const std::string& keyword);
 
         void displayReservedTrips(User& user);
 
